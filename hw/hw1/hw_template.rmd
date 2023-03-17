@@ -1,0 +1,111 @@
+---
+title: "1st homework assignment"
+output: pdf_document
+highlight: zenburn
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task 1 - cleaning data (2 points)
+
+Work with the **customer_behaviour** dataset. 
+
+```{r}
+load("customer_behaviour.RData")
+```
+
+The dataset has 4 columns, each row represents an individual customer: *money_spent* describes the average amount of money customer spends during one visit, *age* is self-explanatory, *web_visits* describes how many times a month customer checks out the shop website, *mail_ads* describes how many advertisement emails the customer gets monthly, *shop_visits* described how many times the customer visits a shop in person a month. Explore each variable and **delete** any rows which have mistakes in them. **Do not fix the mistakes, delete whole rows.**
+
+| number of rows in the cleaned dataset | 
+| -------------- | 
+| `insert number` | 
+
+
+## Task 2 - descriptive statistics (3 points)
+
+Work with the cleaned dataset from the previous month **customer_behaviour2**.
+
+```{r}
+load("customer_behaviour2.RData")
+```
+
+Firstly, create a new variable called `big` where each value equals either 1 (if the person spent more money than 5000 USD), or 0 (if he spent less or equal):
+
+```{r}
+# insert your code here
+```
+
+Plot two boxplots of the variable *money_spent* into one figure: the first one for observations with the value of *big* equal to 0, the second one for observations with the value of *big* equal to 1. Then create a histogram for the variable *money_spent* together with its kernel density estimation.
+
+```{r, echo = FALSE, out.width="49%"}
+# insert your code here
+
+```
+
+Finally, compute following numerical characteristics of the variable *age*:
+
+| mean | median | $1^{st}$ quartile | $3^{rd}$ quartile | interquartile range | variance |
+| -------------- | --------------- | --------------- | --------------- | --------------------- | -------------- |
+| `insert` | `insert` | `insert` | `insert` | `insert` | `insert` |
+
+Choose one appropriate measure of location and one appropriate measure of variability for the *money_spent* variable. Input the name of the measure into the following table. Briefly explain why you chose these measures.
+
+|measure of location | measure of variability |
+|-----------------|-------------------|
+| `insert name`| `insert name`|
+|--------------------|---------------|
+| `insert explanation` | `insert explanation` |
+
+## Task 3 - correlation (2 points)
+
+Compute the correlation matrix of the data from the previous task (excluding the *money_spent* and *big* variables) and the sum of all its diagonal elements. Explain the result of the sum:
+
+```{r, include = F}
+# compute the correlation matrix here:
+
+# compute the sum of all diagonal elements here:
+
+```
+
+| Sum of diagonal elements | Explanation |
+|---------------|--------------------------------|
+| `number` | `text` |
+
+
+Compute and **interpret** correlation coeficients between following variables:
+
+| Variables | Results | Interpretation |
+|-----------------|-----------|--------------------------------------|
+| `example` | 0 | The correlation is zero, which means... |
+| `money_spent`, `age` | `insert`| `insert` |
+| `money_spent`, `web_visits` | `insert`| `insert` |
+
+Interpretation in the form "correlation coefficient is 0.8 which means the correlation is high" will not be accepted.
+
+
+## Task 4 - PCA (3 points)
+
+Use PCA on the dataset from the previous task (**customer_behaviour2**, excluding variables *money_spent* and *big*). Use as little components as possible to capture at least 80 % of data variance. 
+
+| Number of components used | 
+|-----------------|
+| `insert` | 
+
+State which variable has the most influence on each component. 
+
+| - | Component 1 | Component 2 | Component 3 | Component 4 | 
+|-----------------|-----------------|-----------------|-----------------| -----------------|
+most impactful variable | `insert` | `insert` | `insert` | `insert` | 
+ 
+
+Create a scatter plot of data points using the first two components. Plot the points in different colours depending on the value of the *big* variable. What is your evaluation of the final plot? Can you decipher from the plot which variable(s) seems best at separating *big* shoppers from the customers who spend less?
+
+```{r, include = T}
+
+```
+
+| Scatter plot evaluation | Which variable(s) best separates heavy spenders |
+|-----------------|-----------------|
+| `insert text explaining what can you see in the scatter plot` | `insert name of the variable(s) and explain why you came to such conclusion` |  
