@@ -1,6 +1,7 @@
 getwd()
 setwd("seminars/03")
 
+
 # ==============================================================================
 # --------------------------------- SEMINAR 3 ----------------------------------
 # ==============================================================================
@@ -19,14 +20,15 @@ data <- read.csv("market.csv")
 str(data)
 head(data)
 
-unique(data$NACE_R2_LABEL)
-unique(data$GEO)
+unique(data$NACE_R2_LABEL) # specifies different market segments
+unique(data$GEO) # specifies the country
 
 # we are interested just in the different states of EU, not in the summaries,
 # ignore the rows with the EU summaries and rename the Germany value:
 
-data <- data[, ]
-data$GEO[] <- "Germany"
+data <- data[data$GEO != "European Union - 28 countries (2013-2020)" &
+                 data$GEO != "Euro area - 19 countries  (from 2015)", ]
+data$GEO[data$GEO == "Germany (until 1990 former territory of the FRG)"] <- "Germany"
 
 # pick up only the variables which we are interested in:
 
@@ -44,12 +46,17 @@ data <- data[, c("NACE_R2_LABEL", "GEO", "Value")]
 
 ?reshape
 data.short <- reshape(data, idvar = "GEO", timevar = "NACE_R2_LABEL", direction = "wide")
+# idvar = unique identificator of the rows
+# timevar = idenrificator of columns
+# direction = wide = format
+# in original table each row represent one distinct combinations of
+# market segments and countries, now each element represents the same
 
 # rename the columns:
 colnames(data.short)[2:12] <-
-  c("Agriculture, forest", "Industry", "Manufacturing", "Construction",
-    "Wholesale and retail", "Information", "Financial", "Real estate",
-    "Science, Technical", "Public administration", "Arts, entertainment")
+    c("Agriculture, forest", "Industry", "Manufacturing", "Construction",
+      "Wholesale and retail", "Information", "Financial", "Real estate",
+      "Science, Technical", "Public administration", "Arts, entertainment")
 head(data.short)
 
 # rename the rows:
@@ -69,6 +76,8 @@ head(data.short)
 # HINT: use cor() and corrplot() functions
 
 (M <- cor(data.short))
+# correlation measures a linear dependence of two variables
+# zero correlation does not imply independence of variables
 
 corrplot(M, method = "circle")
 corrplot.mixed(M, lower.col = "black", diag = "n", tl.pos = "lt")
@@ -81,12 +90,12 @@ corrplot(M, order = "hclust", addrect = 4)
 # create a single scatter plot for Industry and Manufacturing,
 # create a scatter plot matrix for all segments
 
-x <- data.short$Industry
-y <- data.short$Manufacturing
+x <- data.short$Industry # x axis
+y <- data.short$Manufacturing # y axis
 
 plot(x, y, col = "red", pch = 19,
      xlab = "Industry", ylab = "Manufacturing", main = "Industry vs. Manufacturing")
-cor(x, y)
+cor(x, y) # strong positive linear dependance
 pairs(data.short, lower.panel = NULL, pch = 19, col = "red")
 
 
@@ -100,11 +109,33 @@ pairs(data.short, lower.panel = NULL, pch = 19, col = "red")
 
 data.pca <- prcomp(data.short)
 
-data.pca
-summary(data.pca) # standard deviation = sqrt(eigenvalues)
+str(data.pca)
+# rotation = eigenvectors
+# x = principal components
+# sdev = eigenvalues
+
+summary(data.pca)
+# standard deviation = sqrt(eigenvalues)
+# proportion of variance = variance explained by each principal component
+# cumulative proportion = cumulative sum of eigenvalues = how much of variance
+# of the original data can be explained using first ... principal components
+
+# for example: the first 4 principal component explain 95.10% of total variance
 
 autoplot(data.pca, data = data.short, label = T, shape = F,
          loadings = TRUE, loadings.label = TRUE)
+# in the states of eastern europe there are more important the agriculture,
+# manufacturing and industry
+# in the western europe, there is more important science and technical
+# these market segments are dividing our observations (countries) in the
+# eastern and western part
+
+head(data.pca$rotation)
+
+# eigenvectors specify the linear combination of all variables for computing
+# each principal component,
+# the coordinates of the first eigenvector specify the importances of all variables
+# in the first principal component etc.
 
 
 # ..................................... D ......................................
@@ -121,22 +152,24 @@ cov_matrix <- cov(data.short)
 
 # find eigenvalues and eigenvectors of cov_matrix:
 s.eigen <- eigen(cov_matrix)
+
 plot(s.eigen$values, type = 'o', col = "red", pch = 19,
      xlab = 'Eigenvalue Number', ylab = 'Eigenvalue Size', main = 'Scree Graph')
-# eigenvalue i = how much of the total variance can be explained by PC_i
+# eigenvalue i = how much of the total variance can be explained by ith principal component
 
 # the first two principal components explain 78.6% of the total variance:
 cumsum(s.eigen$values / s)
 plot(cumsum(s.eigen$values / s), type = 'o', col = "red", pch = 19,
      xlab = 'Component', ylab = 'acconted varriance', main = 'Total variance')
 
+# the first twoo eigenvectors:
 c1 <- s.eigen$vectors[, 1]
 c2 <- s.eigen$vectors[, 2]
 
 # prinipal component = original data transformed by the multiplication
 # with eig_vector = data in new coordinates (of eig_vectors)
 
-# the first principal component (direction):
+# the first principal component:
 pc1 <- as.matrix(data.short) %*% c1
 # the second:
 pc2 <- as.matrix(data.short) %*% c2
@@ -176,16 +209,17 @@ text(c(xold1, xold2, xold3), c(yold1, yold2, yold3) + 0.05,
 
 library(jpeg)
 
+# load the image:
 img <- readJPEG("001.jpg", native = FALSE)
 
-par(mar = c(0, 0, 0, 0))
+par(mar = c(0, 0, 0, 0)) # specify zero margins around the plot
 plot(1:2, type = "n", xlab = "", ylab = "", xaxt = 'n', yaxt = 'n')
 rasterImage(img, 1, 1, 2, 2)
 # columns (186 in total) -> variables
 # rows (258 in total) -> observations
 
+# principal component analysis
 data.pca <- prcomp(img)
-# returns only first 200 eigenvectors of cov matrix and principal components
 
 # original data = PCs * "inverse" of eigenvector matrix
 # (the same as the transpose now):
@@ -202,8 +236,10 @@ rasterImage(data.reconst, 1, 1, 2, 2)
 
 # 1) use default: center = T, scale = F and then add the substracted means
 data.pca <- prcomp(img, center = T, scale = F)
+
 d <- data.pca$x %*% t(data.pca$rotation) +
-  matrix(rep(data.pca$center, each = ), ncol = ) # FILL
+    matrix(rep(data.pca$center, each = 258), ncol = 186) 
+# we just added the means of each variable to each column
 
 plot(1:2, type = 'n', xlab = "", ylab = "", xaxt = 'n', yaxt = 'n')
 rasterImage(d, 1, 1, 2, 2)
@@ -218,9 +254,11 @@ rasterImage(d, 1, 1, 2, 2)
 
 # if the data was also scaled (center = T, scale = T):
 data.pca <- prcomp(img, center = T, scale = T)
+
 d <- (data.pca$x %*% t(data.pca$rotation)) *
-  matrix(rep(data.pca$scale, each = 258), ncol = 186) +
-  matrix(rep(data.pca$center, each = 258), ncol = 186)
+    matrix(rep(data.pca$scale, each = 258), ncol = 186) +
+    matrix(rep(data.pca$center, each = 258), ncol = 186)
+# we added the means of each variable to each column and scale it back
 
 plot(1:2, type = 'n', xlab = "", ylab = "", xaxt = 'n', yaxt = 'n')
 rasterImage(d, 1, 1, 2, 2)
@@ -234,30 +272,32 @@ s <- summary(data.pca)
 par(mar = c(5.1, 4.1, 4.1, 2.1))
 plot(s$importance[3, ], main = "Cumulative Proportion of variance", ylab = "proportion",
      type = 'o', col = "red", pch = 19)
+# cumulative proportions are the cumulative importances of all principal components
+# up to the actual index
 
 # importances = eigenvalues
 # rotation = eigenvectors = new coordinates
 # x = principal components = new variables
 
-# plot the eigenvectors:
+# plot the eigenvectors (just for volunteers):
 par(mfrow = c(5, 5), mar = c(1, 1, 1, 1))
 for (i in 1:25){
-  d <- matrix(rep(data.pca$rotation[, i], each = 200), ncol = 300, byrow = F)
-  d <- (d - min(d)) / (max(d) - min(d)) # scale between 0 and 1
-  plot(1:2, type = 'n', xlab = "", ylab = "", xaxt = 'n', yaxt = 'n', main = i)
-  rasterImage(d, 1, 1, 2, 2)
+    d <- matrix(rep(data.pca$rotation[, i], each = 200), ncol = 300, byrow = F) # = T
+    d <- (d - min(d)) / (max(d) - min(d)) # scale between 0 and 1
+    plot(1:2, type = 'n', xlab = "", ylab = "", xaxt = 'n', yaxt = 'n', main = i)
+    rasterImage(d, 1, 1, 2, 2)
 }
 par(mfrow = c(1, 1), mar = c(5.1, 4.1, 4.1, 2.1))
 
 # choose the number of PCs for explaining 90% of variance at least:
-(num_components <- sum(s$importance[3, ] < 0.9) + 1)
+(num_components <- sum(s$importance[3, ] < 0.99) + 1)
 
 # the reconstructed image using just few (the most important) components:
 d <- data.pca$x[, 1:num_components] %*% t(data.pca$rotation[, 1:num_components])
 #  original data x = PCs * (inversion of the eigen vectors matrix)
 
 d <- d + rep(data.pca$center, each = 258) # TRY ALSO
-d <- (d - min(d)) / (max(d) - min(d))
+d <- (d - min(d)) / (max(d) - min(d)) # rescale the final image
 
 par(mar = c(0, 0, 0, 0))
 plot(1:2, type = 'n', xlab = "", ylab = "", xaxt = 'n', yaxt = 'n')
@@ -275,41 +315,51 @@ rasterImage(d, 1, 1, 2, 2)
 
 data <- c()
 for (i in 1:9){
-  img <- readJPEG(paste(0, 0, i, ".jpg", sep = ""), native = FALSE)
-  data <- rbind(data, c(img)) # we cut the image data by columns
+    img <- readJPEG(paste("0", "0", i, ".jpg", sep = ""), native = FALSE)
+    data <- rbind(data, c(img)) # we cut the image data by columns
 }
+# in each iteration we loaded one image in the matrix representation and using
+# c(img) we reshaped it into the vector BY COLUMNS, then we added this vector
+# to the final data matrix as a new row.
+
 # columns = pixels of each figure -> variables
 # rows = figures -> observations
 
 par(mfrow = c(1, 1), mar = c(5.1, 4.1, 4.1, 2.1))
 data.pca <- prcomp(data, scale = F) # try scale=T
 
+# plot the cumulative importances of the first few principal components
 s <- summary(data.pca)
 plot(s$importance[3, ], col = "red", pch = 19,
      main = "Cumulative Proportion of variance", ylab = "proportion", type = 'o')
 
+# eigenvectors visualization (for volunteers):
 par(mfrow = c(3, 3), mar = c(1, 1, 1, 1))
 for (i in 1:9){
-  d <- data.pca$rotation[, i]
-  d <- (d - min(d)) / (max(d) - min(d))
-  m <- matrix(d, nrow = dim(img)[1]) # returns new coordinates = eigenvectors
-  plot(1:2, type = 'n', xlab = "", ylab = "", xaxt = 'n', yaxt = 'n')
-  rasterImage(m, 1, 1, 2, 2)
+    d <- data.pca$rotation[, i]
+    d <- (d - min(d)) / (max(d) - min(d))
+    m <- matrix(d, nrow = dim(img)[1], byrow = FALSE) # returns new coordinates = eigenvectors
+    plot(1:2, type = 'n', xlab = "", ylab = "", xaxt = 'n', yaxt = 'n')
+    rasterImage(m, 1, 1, 2, 2)
 }
 
 # find the number of principal components needed for
 # explaining at least 90% of variablity:
-(total <- sum(s$importance[3, ] < 0.8) + 1)
+(total <- sum(s$importance[3, ] < 0.9) + 1)
+
+# reconstruct the original data matrix using just first "total" principal components:
 dd <- data.pca$x[, 1:total] %*% t(data.pca$rotation[, 1:total]) +
-  rep(data.pca$center, each = 9)
+    rep(data.pca$center, each = 9)
+# we added the means of each variable to each column again
+# (because of default centering of the prcomp built-in function)
 
 # reconstruct images using the first few principal components:
 par(mfrow = c(3, 3), mar = c(1, 1, 1, 1))
 for (i in 1:9){
-  d <- dd[i, ]
-  d <- (d - min(d)) / (max(d) - min(d))
-  m <- matrix(d, nrow = dim(img)[1], byrow = FALSE) 
-  plot(1:2, type = 'n', xlab = "", ylab = "", xaxt = 'n', yaxt = 'n', main = i)
-  rasterImage(m, 1, 1, 2, 2)
+    d <- dd[i, ]
+    d <- (d - min(d)) / (max(d) - min(d))
+    m <- matrix(d, nrow = dim(img)[1], byrow = FALSE) 
+    plot(1:2, type = 'n', xlab = "", ylab = "", xaxt = 'n', yaxt = 'n', main = i)
+    rasterImage(m, 1, 1, 2, 2)
 }
 par(mfrow = c(1, 1), mar = c(5.1, 4.1, 4.1, 2.1))
