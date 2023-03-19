@@ -72,7 +72,7 @@ my_winsorized_mean <- function(data, k){
 my_winsorized_mean(price, 10)
 
 # a function exists in a package psych
-install.packages("psych")
+#install.packages("psych")
 psych::winsor.mean(price, trim = 0.1)
 
 ########################## subtask d #############################

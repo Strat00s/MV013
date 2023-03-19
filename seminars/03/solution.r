@@ -7,7 +7,7 @@ setwd("seminars/03")
 # ==============================================================================
 
 
-# install.packages("corrplot")
+install.packages("corrplot", "ggfortify", "dplyr")
 library(corrplot)
 library(ggfortify)
 library(dplyr)

@@ -196,12 +196,12 @@ hist(price, col = "red", breaks = )
 ?lines
 
 d <- density(price)         # apply density() function to price
-
+d
 # plot the histogram together with the density line
 # HINT: use lines() command for d variable after you plot the histogram
 
-hist(price, col = "red", breaks = 50)
-lines(d, col = "green")
+hist(price)
+lines(density(price))
 
 # ..................................... G ......................................
 
