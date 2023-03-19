@@ -86,4 +86,21 @@ median(data$money_spent)
 
 ###############################################################################
 #TASK3
+#create subset of data without money_spent and big
+cor_data = cor(data[, c("age", "web_visits", "mail_ads", "shop_visits")])
 
+#compute correlation matrix
+cor(cor_data)
+#library(corrplot)
+#corrplot(cor_data)
+
+#sum of the main diagonal (number of variables)
+sum(diag(cor_data))
+#it tells us that the every variable perfectly correlates with itself (and so it tells us the number of variables)
+
+cor(data$age, data$web_visits)
+
+#correlation between vars
+#the closer they are to 0, the lower their relationship, the closer to 1, the higher possitive linear relationship, the closer ot -1, the higher the negative linear relationship
+cor(data$money_spent, data$age)         #-0.61 Moderately high negative correlation
+cor(data$money_spent, data$web_visits)  #0.37  Moderate possitive correlation
