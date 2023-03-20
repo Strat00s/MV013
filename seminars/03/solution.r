@@ -210,7 +210,7 @@ text(c(xold1, xold2, xold3), c(yold1, yold2, yold3) + 0.05,
 library(jpeg)
 
 # load the image:
-img <- readJPEG("001.jpg", native = FALSE)
+img <- readJPEG("images/008.jpg", native = FALSE)
 
 par(mar = c(0, 0, 0, 0)) # specify zero margins around the plot
 plot(1:2, type = "n", xlab = "", ylab = "", xaxt = 'n', yaxt = 'n')
@@ -290,7 +290,7 @@ for (i in 1:25){
 par(mfrow = c(1, 1), mar = c(5.1, 4.1, 4.1, 2.1))
 
 # choose the number of PCs for explaining 90% of variance at least:
-(num_components <- sum(s$importance[3, ] < 0.99) + 1)
+(num_components <- sum(s$importance[3, ] < 0.9) + 1)
 
 # the reconstructed image using just few (the most important) components:
 d <- data.pca$x[, 1:num_components] %*% t(data.pca$rotation[, 1:num_components])
