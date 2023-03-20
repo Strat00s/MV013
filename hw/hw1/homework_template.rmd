@@ -53,13 +53,13 @@ lines(density(data$money_spent), lwd = 2)
 Finally, compute following numerical characteristics of the variable *age*:
 
 | mean     | median | $1^{st}$ quartile | $3^{rd}$ quartile | interquartile range | variance |
-|----------|--------|-------------------|-------------------|---------------------|----------|
+|------------|------------|------------|------------|------------|------------|
 | 54.78882 | 55     | 40                | 68.5              | 28.5                | 344.7146 |
 
 Choose one appropriate measure of location and one appropriate measure of variability for the *money_spent* variable. Input the name of the measure into the following table. Briefly explain why you chose these measures.
 
 | measure of location                              | measure of variability                                                            |
-|--------------------------------------------------|-----------------------------------------------------------------------------------|
+|---------------------------|---------------------------------------------|
 | median                                           | interquartile range                                                               |
 | --------------------                             | ---------------                                                                   |
 | It is less influenced by extremes in the dataset | It is less influenced by extremes in the dataset (the dataset seems to be skewed) |
@@ -78,16 +78,16 @@ sum(diag(cor_data))
 ```
 
 | Sum of diagonal elements | Explanation                                                                                                       |
-|--------------------------|-------------------------------------------------------------------------------------------------------------------|
+|----------------|-------------------------------------------------------|
 | 4                        | It tells us that the every variable perfectly correlates with itself (and so it tells us the number of variables) |
 
 Compute and **interpret** correlation coeficients between following variables:
 
-| Variables                   | Results    | Interpretation                                                                                 |
-|-----------------------------|------------|------------------------------------------------------------------------------------------------|
-| `example`                   | 0          | The correlation is zero, which means...                                                        |
-| `money_spent`, `age`        | -0.6133549 | Moderately high negative correlation. The more money_spent increases, the more age decreases.  |
-| `money_spent`, `web_visits` | 0.3725449  | Moderate possitive correlation. The more money_spent increases, the more web_visits increases. |
+| Variables                   | Results    | Interpretation                                                                                                 |
+|--------------|--------------|---------------------------------------------|
+| `example`                   | 0          | The correlation is zero, which means...                                                                        |
+| `money_spent`, `age`        | -0.6133549 | Moderately high negative correlation. Seems that the older people are, the less money they spend.              |
+| `money_spent`, `web_visits` | 0.3725449  | Moderate possitive correlation. Seems that the more people visit the eshop website, the more money they spend. |
 
 Interpretation in the form "correlation coefficient is 0.8 which means the correlation is high" will not be accepted.
 
@@ -102,7 +102,7 @@ Use PCA on the dataset from the previous task (**customer_behaviour2**, excludin
 State which variable has the most influence on each component.
 
 | \-                      | Component 1 | Component 2 | Component 3 | Component 4 |
-|-------------------------|-------------|-------------|-------------|-------------|
+|-------------------|--------------|--------------|--------------|--------------|
 | most impactful variable | web_visits  | age         | mail_ads    | shop_visits |
 
 Create a scatter plot of data points using the first two components. Plot the points in different colours depending on the value of the *big* variable. What is your evaluation of the final plot? Can you decipher from the plot which variable(s) seems best at separating *big* shoppers from the customers who spend less?
@@ -116,6 +116,11 @@ ggplot(df, aes(x = PC1, y = PC2, color = factor(big))) +
     geom_point()
 ```
 
-| Scatter plot evaluation                                                                                                                                   | Which variable(s) best separates heavy spenders                                                                                                                          |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| I can see that the less time people spend on the web, the less they spent. There also seems to be a trend that the older people are, the less they spend. | It seems to be the age and web_visited variables. There can be seen a line which shows that the younger you are and the more webs you visited, the more money you spend. |
+| Scatter plot evaluation                      | Which variable(s) best separates heavy spenders           |
+|--------------------------------|--------------------------------------|
+| I can see that both groups (light and heavy  
+ spenders) do mix quite a bit in the center.   
+ There is a difference between them, but they  
+ do mix.                                       | Age and web_visited variables. It seems that heavy        
+                                                spenders visit the eshop more often and are younger while  
+                                                light spenders are older and visit it less.                |
