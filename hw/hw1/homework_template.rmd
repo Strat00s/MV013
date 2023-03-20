@@ -33,29 +33,36 @@ load("customer_behaviour2.RData")
 Firstly, create a new variable called `big` where each value equals either 1 (if the person spent more money than 5000 USD), or 0 (if he spent less or equal):
 
 ```{r}
-# insert your code here
+data$big = as.numeric(data$money_spent > 5000)
 ```
 
 Plot two boxplots of the variable *money_spent* into one figure: the first one for observations with the value of *big* equal to 0, the second one for observations with the value of *big* equal to 1. Then create a histogram for the variable *money_spent* together with its kernel density estimation.
 
 ```{r, echo = FALSE, out.width="49%"}
-# insert your code here
+#split the plot area and draw both box plots
+par(mfrow = c(1, 2))
+boxplot(data$money_spent[data$big == 0], main = "Spent <= 5000", xlab = "big = 0", ylab = "money_spent")
+boxplot(data$money_spent[data$big == 1], main = "Spent > 5000", xlab = "big = 1", ylab = "money_spent")
 
+#reset area and draw histogram with kernel density
+par(mfrow = c(1, 1))
+hist(data$money_spent, freq = FALSE)
+lines(density(data$money_spent), lwd = 2)
 ```
 
 Finally, compute following numerical characteristics of the variable *age*:
 
-| mean     | median   | $1^{st}$ quartile | $3^{rd}$ quartile | interquartile range | variance |
-|----------|----------|-------------------|-------------------|---------------------|----------|
-| `insert` | `insert` | `insert`          | `insert`          | `insert`            | `insert` |
+| mean     | median | $1^{st}$ quartile | $3^{rd}$ quartile | interquartile range | variance |
+|----------|--------|-------------------|-------------------|---------------------|----------|
+| 54.78882 | 55     | 40                | 68.5              | 28.5                | 344.7146 |
 
 Choose one appropriate measure of location and one appropriate measure of variability for the *money_spent* variable. Input the name of the measure into the following table. Briefly explain why you chose these measures.
 
-| measure of location  | measure of variability |
-|----------------------|------------------------|
-| `insert name`        | `insert name`          |
-| -------------------- | ---------------        |
-| `insert explanation` | `insert explanation`   |
+| measure of location                              | measure of variability                                                            |
+|--------------------------------------------------|-----------------------------------------------------------------------------------|
+| median                                           | interquartile range                                                               |
+| --------------------                             | ---------------                                                                   |
+| It is less influenced by extremes in the dataset | It is less influenced by extremes in the dataset (the dataset seems to be skewed) |
 
 ## Task 3 - correlation (2 points)
 
@@ -63,22 +70,24 @@ Compute the correlation matrix of the data from the previous task (excluding the
 
 ```{r, include = F}
 # compute the correlation matrix here:
+short_data = data[, c("age", "web_visits", "mail_ads", "shop_visits")]
+(cor_data = cor(short_data))
 
 # compute the sum of all diagonal elements here:
-
+sum(diag(cor_data))
 ```
 
-| Sum of diagonal elements | Explanation |
-|--------------------------|-------------|
-| `number`                 | `text`      |
+| Sum of diagonal elements | Explanation                                                                                                       |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------|
+| 4                        | It tells us that the every variable perfectly correlates with itself (and so it tells us the number of variables) |
 
 Compute and **interpret** correlation coeficients between following variables:
 
-| Variables                   | Results  | Interpretation                          |
-|-----------------------------|----------|-----------------------------------------|
-| `example`                   | 0        | The correlation is zero, which means... |
-| `money_spent`, `age`        | `insert` | `insert`                                |
-| `money_spent`, `web_visits` | `insert` | `insert`                                |
+| Variables                   | Results    | Interpretation                                                                                 |
+|-----------------------------|------------|------------------------------------------------------------------------------------------------|
+| `example`                   | 0          | The correlation is zero, which means...                                                        |
+| `money_spent`, `age`        | -0.6133549 | Moderately high negative correlation. The more money_spent increases, the more age decreases.  |
+| `money_spent`, `web_visits` | 0.3725449  | Moderate possitive correlation. The more money_spent increases, the more web_visits increases. |
 
 Interpretation in the form "correlation coefficient is 0.8 which means the correlation is high" will not be accepted.
 
@@ -88,20 +97,25 @@ Use PCA on the dataset from the previous task (**customer_behaviour2**, excludin
 
 | Number of components used |
 |---------------------------|
-| `insert`                  |
+| 2                         |
 
 State which variable has the most influence on each component.
 
 | \-                      | Component 1 | Component 2 | Component 3 | Component 4 |
 |-------------------------|-------------|-------------|-------------|-------------|
-| most impactful variable | `insert`    | `insert`    | `insert`    | `insert`    |
+| most impactful variable | web_visits  | age         | mail_ads    | shop_visits |
 
 Create a scatter plot of data points using the first two components. Plot the points in different colours depending on the value of the *big* variable. What is your evaluation of the final plot? Can you decipher from the plot which variable(s) seems best at separating *big* shoppers from the customers who spend less?
 
 ```{r, include = T}
-
+short_data.pca <- prcomp(short_data, center = T, scale = F)
+pca_scores = predict(short_data.pca, short_data)
+df = data.frame(PC1 = pca_scores[, 1], PC2 = pca_scores[, 2], big = data$big)
+library(ggplot2)
+ggplot(df, aes(x = PC1, y = PC2, color = factor(big))) + 
+    geom_point()
 ```
 
-| Scatter plot evaluation                                       | Which variable(s) best separates heavy spenders                              |
-|---------------------------------------------------------------|------------------------------------------------------------------------------|
-| `insert text explaining what can you see in the scatter plot` | `insert name of the variable(s) and explain why you came to such conclusion` |
+| Scatter plot evaluation                                                                                                                                   | Which variable(s) best separates heavy spenders                                                                                                                          |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| I can see that the less time people spend on the web, the less they spent. There also seems to be a trend that the older people are, the less they spend. | It seems to be the age and web_visited variables. There can be seen a line which shows that the younger you are and the more webs you visited, the more money you spend. |

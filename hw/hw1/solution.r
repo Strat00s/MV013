@@ -44,7 +44,8 @@ hist(data$shop_visits)
 #remove the row with way too many mail ads
 data = data[data$mail_ads != max(data$mail_ads),]
 
-nrow(data)  #resulting number of rows
+#resulting number of rows
+nrow(data)
 
 
 ###############################################################################
@@ -87,20 +88,43 @@ median(data$money_spent)
 ###############################################################################
 #TASK3
 #create subset of data without money_spent and big
-cor_data = cor(data[, c("age", "web_visits", "mail_ads", "shop_visits")])
-
+short_data = data[, c("age", "web_visits", "mail_ads", "shop_visits")]
 #compute correlation matrix
-cor(cor_data)
-#library(corrplot)
-#corrplot(cor_data)
+cor_data = cor(short_data)
 
 #sum of the main diagonal (number of variables)
 sum(diag(cor_data))
 #it tells us that the every variable perfectly correlates with itself (and so it tells us the number of variables)
 
-cor(data$age, data$web_visits)
-
 #correlation between vars
 #the closer they are to 0, the lower their relationship, the closer to 1, the higher possitive linear relationship, the closer ot -1, the higher the negative linear relationship
 cor(data$money_spent, data$age)         #-0.61 Moderately high negative correlation
 cor(data$money_spent, data$web_visits)  #0.37  Moderate possitive correlation
+
+
+###############################################################################
+#TASK4
+#Do I want to scale them?
+#pretty much taken from seminar. Do PCA, get summary, calculate number of components required for at least 80%
+short_data.pca <- prcomp(short_data, center = T, scale = F)
+(s <- summary(short_data.pca))
+plot(s$importance[3, ], main = "Cumulative Proportion of variance", ylab = "proportion",
+     type = 'o', col = "red", pch = 19)
+(num_components <- sum(s$importance[3, ] < 0.8) + 1)
+#just 2 components are enough (can be nicely seen from the plot)
+
+#look for values closes to 1 for each component
+head(short_data.pca$rotation)
+#PC1: web_visits -0.80907337
+#PC2: age        -0.7944448
+#PC3: mail_ads    0.9764561
+#PC4: shop_visits 0.98610189
+
+pca_scores = predict(short_data.pca, short_data)
+df = data.frame(PC1 = pca_scores[, 1], PC2 = pca_scores[, 2], big = data$big)
+library(ggplot2)
+ggplot(df, aes(x = PC1, y = PC2, color = factor(big))) + 
+    geom_point()
+
+#library(dplyr)
+#autoplot(prcomp(short_data), data = df, shape = T, colour = ifelse(data$big == 1, 'red', 'black'), loadings = TRUE, loadings.label = TRUE)
