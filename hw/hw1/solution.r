@@ -105,11 +105,12 @@ cor(data$money_spent, data$web_visits)  #0.37  Moderate possitive correlation
 ###############################################################################
 #TASK4
 #Do I want to scale them?
-#pretty much taken from seminar. Do PCA, get summary, calculate number of components required for at least 80%
-short_data.pca <- prcomp(short_data, center = T, scale = F)
+#pretty much taken from seminar. Except now we want to scale the data
+short_data.pca <- prcomp(short_data, center = T, scale = T)
 (s <- summary(short_data.pca))
 plot(s$importance[3, ], main = "Cumulative Proportion of variance", ylab = "proportion",
      type = 'o', col = "red", pch = 19)
+#calculate the number of components required for 80%
 (num_components <- sum(s$importance[3, ] < 0.8) + 1)
 #just 2 components are enough (can be nicely seen from the plot)
 
