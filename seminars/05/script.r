@@ -20,7 +20,7 @@ n <- 200
 # Explain Your answer (for example using the histogram of the data).
 
 hist(data, freq = F, col = "red")
-library()
+
 
 
 # ...................................... B .....................................
@@ -31,28 +31,30 @@ library()
 
 # firstly, create a function for computing the negative log-likelihood of the
 # binomial distribution:
-
 negloglik.binom <- function(par, x, n) {
-  # HINT: use the logarithm of the dbinom() function for each value of the input
-  # vector x with parameters: par, n and then sum it:
-  return(- )
+    # HINT: use the logarithm of the dbinom() function for each value of the input
+    # vector x with parameters: par, n and then sum it:
+    return(-sum(log10(dbinom(data, n, par))))
 }
+
 
 # now find the minimum of this function (which is the maximum of the original
 # log-likelihood function and our estimation of parameter p):
 
-?optimize
+#?optimize
 
 # univariate optimalization ("Brent" method):
-op <- optimize( , interval = , ...)
+op <- optimize(negloglik.binom, interval = seq(0, 1, len = 200), data, n)
 # fill the function to minimalize, range of possible values of your parameter
 # ("interval") and the rest of inputs of your function ("...")
 
 # what is in the op variable?
 
 str(op)
-op$par   # estimation of parameter p (the point of minimum)
-op$value # value of the negative log-likelihood
+op$minimum   # estimation of parameter p (the point of minimum)
+op$objective # value of the negative log-likelihood
+
+
 
 # now compute the negative log-likelihood for each value of the vector "parameter":
 
@@ -62,13 +64,13 @@ neg_log_like <- rep(0, times = 200)      # prepare vector of the length 200
 # fill the vector neg_log_like with the values of the negative log-likelihood function
 # for each possible value of vector parameter:
 for (i in 1:200) {
-  neg_log_like[i] <- 
+    neg_log_like[i] <- negloglik.binom(parameter[i], data, n)
 }
 
 # plot the negative log likelihood function together with the numerical estimation:
 
-plot( , , type = "l", main = "Negative log likelihood") # negative log-likelihood
-points(, , col = "red", pch = 16) # point [estimated p, its neg. log. likelihood]
+plot(parameter, neg_log_like , type = "l", main = "Negative log likelihood") # negative log-likelihood
+points(op$minimum, op$objective, col = "red", pch = 16) # point [estimated p, its neg. log. likelihood]
 abline(v = op$par, col = 'red') # "v" as "vertical" line
 
 
