@@ -59,7 +59,7 @@ Finally, compute following numerical characteristics of the variable *age*:
 Choose one appropriate measure of location and one appropriate measure of variability for the *money_spent* variable. Input the name of the measure into the following table. Briefly explain why you chose these measures.
 
 | measure of location                                                                                                                           | measure of variability                                                                                                                                            |
-|---------------------------|---------------------------------------------|
+|--------------------------------|----------------------------------------|
 | median                                                                                                                                        | interquartile range                                                                                                                                               |
 | --------------------                                                                                                                          | ---------------                                                                                                                                                   |
 | It is less influenced by extremes in the dataset. And as the dataset seems to be skewed, that's why I think it is a good measure of location. | I think it is a good measure of variablity, because the dataset seems to be skewed. And just like median, the IQR is less influcenced by extremes in the dataset. |
@@ -78,13 +78,13 @@ sum(diag(cor_data))
 ```
 
 | Sum of diagonal elements | Explanation                                                                                                                                                                                                                                                                                                                                  |
-|------------------|------------------------------------------------------|
+|---------------------|---------------------------------------------|
 | 4                        | The correlation matrix is a square matrix with correlation coefficient (between -1 and 1) between all variables. The value on the diagonal is a correlation of the variable with itself, which is always 1. So the sum tells us the number of variables in the correlation matrix, but it otherwise does not give us any useful information. |
 
 Compute and **interpret** correlation coeficients between following variables:
 
 | Variables                   | Results    | Interpretation                                                                                                             |
-|---------------|---------------|------------------------------------------|
+|----------------|------------|------------------------------------------|
 | `example`                   | 0          | The correlation is zero, which means...                                                                                    |
 | `money_spent`, `age`        | -0.6133549 | Moderately high negative correlation. This can be interpreted such that the older people were, the less money they spent.  |
 | `money_spent`, `web_visits` | 0.3725449  | Moderate possitive correlation. This indicates that people who visited the eshop website more often also spent more money. |
@@ -108,19 +108,25 @@ State which variable has the most influence on each component.
 Create a scatter plot of data points using the first two components. Plot the points in different colours depending on the value of the *big* variable. What is your evaluation of the final plot? Can you decipher from the plot which variable(s) seems best at separating *big* shoppers from the customers who spend less?
 
 ```{r, include = T}
-
+#Either graph will do. The autoplot has loadings which nicely visualize
+#the main variables that seperate the spenders (age and web_visits)
 short_data.pca <- prcomp(short_data, center = T, scale = F)
 pca_scores = predict(short_data.pca, short_data)
 df = data.frame(PC1 = pca_scores[, 1], PC2 = pca_scores[, 2], big = data$big)
 #library(ggplot2)
-#ggplot(df, aes(x = PC1, y = PC2)) + geom_point(color = ifelse(data$big == 1, "red", "black")) +
-#geom_smooth(method = "lm", formula = y ~ x, data = df[df$big == 0,], se = F, color = "black") +
-#geom_smooth(method = "lm", formula = y ~ x, data = df[df$big == 1,], se = F, color = "red")
+#ggplot(df, aes(x = PC1, y = PC2))+
+#    geom_point(color = ifelse(data$big == 1, "red", "black")) +
+#    geom_smooth(method = "lm", formula = y ~ x, data = df[df$big == 0,],
+#    se = F, color = "black") +
+#    geom_smooth(method = "lm", formula = y ~ x, data = df[df$big == 1,],
+#    se = F, color = "red")
 
 library(ggfortify)
-autoplot(short_data.pca, data = df, shape = T, colour = ifelse(data$big == 1, 'red', 'black'), loadings = TRUE, loadings.label = TRUE, loadings.color = "blue", loadings.label.color = "blue") + 
+autoplot(short_data.pca, data = df, shape = T, 
+         colour = ifelse(data$big == 1, 'red', 'black'), loadings = TRUE, 
+         loadings.label = TRUE, loadings.color = "blue", 
+         loadings.label.color = "blue") + 
     geom_point(color = ifelse(data$big == 1, "red", "black"))
-#Either graph will do. The autoplot has loadings which nicely visualize the main variables that seperate the spenders (age and web_visits)
 ```
 
 | Scatter plot evaluation                                                                                                                                                                                                      | Which variable(s) best separates heavy spenders                                                                                                                                                                                                                                                                                                   |
