@@ -104,28 +104,33 @@ cor(data$money_spent, data$web_visits)  #0.37  Moderate possitive correlation
 
 ###############################################################################
 #TASK4
-#Do I want to scale them?
-#pretty much taken from seminar. Except now we want to scale the data
-short_data.pca <- prcomp(short_data, center = T, scale = T)
+#pretty much taken from seminar
+short_data.pca <- prcomp(short_data, center = T, scale = F)
 (s <- summary(short_data.pca))
-plot(s$importance[3, ], main = "Cumulative Proportion of variance", ylab = "proportion",
+plot(s$importance[3, ], ylab = "proportion", xlab = "components",
      type = 'o', col = "red", pch = 19)
 #calculate the number of components required for 80%
 (num_components <- sum(s$importance[3, ] < 0.8) + 1)
-#just 2 components are enough (can be nicely seen from the plot)
+#3 components are required (can be nicely seen from the plot)
 
-#look for values closes to 1 for each component
+#look for values closest to |1| for each component
 head(short_data.pca$rotation)
 #PC1: web_visits -0.80907337
 #PC2: age        -0.7944448
 #PC3: mail_ads    0.9764561
 #PC4: shop_visits 0.98610189
 
+
 pca_scores = predict(short_data.pca, short_data)
 df = data.frame(PC1 = pca_scores[, 1], PC2 = pca_scores[, 2], big = data$big)
 library(ggplot2)
-ggplot(df, aes(x = PC1, y = PC2, color = factor(big))) + 
-    geom_point()
+ggplot(df, aes(x = PC1, y = PC2)) + 
+    geom_point(color = ifelse(data$big == 1, "red", "black")) + 
+    geom_smooth(method = "lm", formula = y ~ x, data = df[df$big == 0,], se = F, color = "black") +
+    geom_smooth(method = "lm", formula = y ~ x, data = df[df$big == 1,], se = F, color = "red")
 
-#library(dplyr)
-#autoplot(prcomp(short_data), data = df, shape = T, colour = ifelse(data$big == 1, 'red', 'black'), loadings = TRUE, loadings.label = TRUE)
+library(ggfortify)
+autoplot(short_data.pca, data = df, shape = T, colour = ifelse(data$big == 1, 'red', 'black'), loadings = TRUE, loadings.label = TRUE)
+
+
+
