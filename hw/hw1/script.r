@@ -1,6 +1,6 @@
-getwd()
-setwd("hw/hw1")
-options(max.print=1000000)
+#getwd()
+#setwd("hw/hw1")
+#options(max.print=1000000)
 
 #TASK 1
 load("customer_behaviour.RData")
@@ -105,7 +105,8 @@ cor(data$money_spent, data$web_visits)  #0.37  Moderate possitive correlation
 ###############################################################################
 #TASK4
 #pretty much taken from seminar
-short_data.pca <- prcomp(short_data, center = T, scale = F)
+#We do want to scale the data (unlike in seminar)
+short_data.pca <- prcomp(short_data, center = T, scale = T)
 (s <- summary(short_data.pca))
 plot(s$importance[3, ], ylab = "proportion", xlab = "components",
      type = 'o', col = "red", pch = 19)
@@ -115,22 +116,23 @@ plot(s$importance[3, ], ylab = "proportion", xlab = "components",
 
 #look for values closest to |1| for each component
 head(short_data.pca$rotation)
-#PC1: web_visits -0.80907337
-#PC2: age        -0.7944448
-#PC3: mail_ads    0.9764561
-#PC4: shop_visits 0.98610189
+#PC1: age       0.6721684
+#PC2: mail_ads  0.6342403
+#PC3: mail_ads -0.6881520
+#PC4: age      -0.6510347
 
 
 pca_scores = predict(short_data.pca, short_data)
 df = data.frame(PC1 = pca_scores[, 1], PC2 = pca_scores[, 2], big = data$big)
 library(ggplot2)
-ggplot(df, aes(x = PC1, y = PC2)) + 
-    geom_point(color = ifelse(data$big == 1, "red", "black")) + 
-    geom_smooth(method = "lm", formula = y ~ x, data = df[df$big == 0,], se = F, color = "black") +
-    geom_smooth(method = "lm", formula = y ~ x, data = df[df$big == 1,], se = F, color = "red")
-
 library(ggfortify)
-autoplot(short_data.pca, data = df, shape = T, colour = ifelse(data$big == 1, 'red', 'black'), loadings = TRUE, loadings.label = TRUE)
-
-
-
+#biplot is a type of scatter plot
+autoplot(short_data.pca, data = df, shape = T, 
+         colour = ifelse(data$big == 1, 'black', 'red'), loadings = TRUE, 
+         loadings.label = TRUE, loadings.color = "blue", 
+         loadings.label.color = "blue") +
+    geom_point(color = ifelse(data$big == 1, "black", "red")) + 
+    annotate("text", x = Inf, y = Inf, hjust = 1, vjust = 1, 
+             label = c("Heavy spender", "\nLight spender"), 
+             color = c("black", "red"))
+    
