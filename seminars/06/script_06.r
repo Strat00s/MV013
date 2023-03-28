@@ -1,4 +1,4 @@
-
+setwd("seminars/05")
 # ==============================================================================
 # --------------------------------- SEMINAR 6 ----------------------------------
 # ==============================================================================
@@ -27,18 +27,18 @@ alpha <- 0.05 # confidence / significance level
 # maximum likelihood estimation of parameters mu and sigma
 # (from the theoretical formulas):
 
-mu <- 
-sigma <- 
+mu <- sum(data) / n
+sigma <- sqrt(sum((data - mu)^2) / n)
 
 # compute the quantile we need:
 
-u.q <- 
+mu.q <- quantile(data, 1 - (alpha/2))
 
 # compute the lower and upper limits of the CI for parameter mu
 # (use formulas from the lecture):
 
-CI_lower <- 
-CI_upper <- 
+CI_lower <- mu - mu.q * (sigma^2)/n
+CI_upper <- mu + u.q * (sigma^2)/n
 
 # plot the histogram of the data again together with the denstiy of normal distribution
 # with estimated parameters and visualization of the MLE of mu with the CI for mu:
