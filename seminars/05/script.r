@@ -10,7 +10,7 @@ setwd("seminars/05")
 
 
 load("toss_a_coin.RData")
-n <- 200
+n <- 100
 
 
 # ...................................... A .....................................
@@ -44,7 +44,7 @@ negloglik.binom <- function(par, x, n) {
 #?optimize
 
 # univariate optimalization ("Brent" method):
-op <- optimize(negloglik.binom, interval = seq(0, 1, len = 200), data, n)
+op <- optimize(negloglik.binom, interval = seq(0, 1, len = 200), x =data, n = n)
 # fill the function to minimalize, range of possible values of your parameter
 # ("interval") and the rest of inputs of your function ("...")
 
@@ -71,7 +71,7 @@ for (i in 1:200) {
 
 plot(parameter, neg_log_like , type = "l", main = "Negative log likelihood") # negative log-likelihood
 points(op$minimum, op$objective, col = "red", pch = 16) # point [estimated p, its neg. log. likelihood]
-abline(v = op$par, col = 'red') # "v" as "vertical" line
+abline(v = op$minimum, col = 'red') # "v" as "vertical" line
 
 
 # ...................................... C .....................................
