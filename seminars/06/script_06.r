@@ -1,4 +1,4 @@
-setwd("seminars/05")
+setwd("seminars/06")
 # ==============================================================================
 # --------------------------------- SEMINAR 6 ----------------------------------
 # ==============================================================================
@@ -27,18 +27,18 @@ alpha <- 0.05 # confidence / significance level
 # maximum likelihood estimation of parameters mu and sigma
 # (from the theoretical formulas):
 
-mu <- sum(data) / n
-sigma <- sqrt(sum((data - mu)^2) / n)
+#mu <- sum(data) / n
+mu = mean(data)
+sigma <- sqrt(sum((data - mu)^2) / (n - 1))
 
 # compute the quantile we need:
-
-mu.q <- quantile(data, 1 - (alpha/2))
+u.q <- qnorm(1 - (alpha/2))
 
 # compute the lower and upper limits of the CI for parameter mu
 # (use formulas from the lecture):
 
-CI_lower <- mu - mu.q * (sigma^2)/n
-CI_upper <- mu + u.q * (sigma^2)/n
+CI_lower <- mu - u.q * sigma/sqrt(n)
+CI_upper <- mu + u.q * sigma/sqrt(n)
 
 # plot the histogram of the data again together with the denstiy of normal distribution
 # with estimated parameters and visualization of the MLE of mu with the CI for mu:
@@ -47,14 +47,14 @@ CI_upper <- mu + u.q * (sigma^2)/n
 # specifies the x-axis coordinate(s) of the vertical line(s). You can use function
 # rect() plotting the rectangle as well.
 
-?abline
-?rect
+#?abline
+#?rect
 
-xx <- 
-density.n <- 
+xx <- 0:100
+density.n <- dnorm(xx, mu, sigma)
 
-hist(, freq = F, main = "Two sided CI for mean", col = "antiquewhite")
-lines(, , lty = 2, lwd = 1.5)
+hist(data, freq = F, main = "Two sided CI for mean", col = "antiquewhite")
+lines(xx, density.n, lty = 2, lwd = 1.5)
 
 abline(v = , col = 'red', lwd = 2)
 rect(CI_lower, 0, CI_upper, 0.15, col = rgb(red = 1, green = 0, blue = 0, alpha = 0.3))
@@ -76,11 +76,11 @@ legend("topright", legend = c("mu from MLE", "CI limits"), col = c("blue", "red"
 mu0 <- 20
 
 # test statistic (from the lecture slides):
-T <- 
+T <- sqrt(n) * (mean(x) - mu) / sigma
 
 # critical region (quantiles of the student t-distribution):
-CR_1 <- 
-CR_2 <- 
+CR_1 <- qt(alpha/2, n - 1)
+CR_2 <- abs(qt(alpha/2, n - 1))
 
 # conclusion: FILL!
 
@@ -91,10 +91,10 @@ CR_2 <-
 # Create a density plot of a theoretical distribution of the test statistic
 # (student t-distribution), visualize the critical region and the test statistic.
 
-?dt
+#?dt
 
-xx <- 
-density.t <- dt(, n - 1) # (n-1) degrees of freedom we know, fill the x-axis
+xx <- seq(-5, 5, 0.01)
+density.t <- dt(xx, n - 1) # (n-1) degrees of freedom we know, fill the x-axis
 
 plot(xx, density.t, type = 'l', main = "Critical region",
      xlab = "x", ylab = "f(x)", sub = paste("mu=", round(mu, 2), "(MLE)"))
@@ -103,13 +103,15 @@ rect(CR_2, 0, 5, 1, col = rgb(red = 1, green = 0, blue = 0, alpha = 0.2), lty = 
 abline(v = T, col = 'blue', lwd = 2)
 
 
+#blue line is in red region -> reject null hypothesis
 # ....................................... D ....................................
 
 
 # Find the p-value of the previous test and use it for decision about the null
 # hypothesis.
 
-p.value <- 
+p.value <- 2* (1 - pt(T, n - 1))
+p.value < alpha
 # volume under the black curve in the blue regions in the following plot
 
 # we DO / DO NOT reject H0: mu = 20 against H1: mu != 20
