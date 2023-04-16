@@ -106,17 +106,22 @@ The aim of this task is to decide whether your data might come from a normal dis
 
 | Do your data look normal? |
 |---------------------------|
-| `insert yes or no`        |
+| `no`                      |
 
 ```{r, echo = FALSE, out.width = "70%"}
-# insert your code of the plot here
+par(mfrow = c(1, 2))
+qqnorm(data2, main = "Data2")
+qqline(data2)
+nd = rnorm(80)
+qqnorm(nd, main = "Normal distribution")
+qqline(nd)
 ```
 
 Support your claim with ONE suitable plot and a result of ONE statistical test confirming it.
 
-| Name of the test | p-value        |
-|------------------|----------------|
-| `insert name`    | `insert value` |
+| Name of the test    | p-value        |
+|---------------------|----------------|
+| `Shapiro-Wilk Test` | `8.439703e-09` |
 
 ## Task 4 - Statistics II (4 points)
 

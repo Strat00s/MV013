@@ -101,7 +101,24 @@ uco <- 492875  # insert your UCO
 set.seed(uco)
 data2 <- sample(data1, 80)
 
+#we can see even from histogram that it probably isn't normal
+x = seq(0, max(data2), length = length(data2))
+hist(data2, freq = FALSE)
+lines(density(data2), lwd = 2)
+lines(density(rnorm(80)), lwd = 2, col = "red")
 
+#ggplot once again nicely shows the difference
+par(mfrow = c(1, 2))
+qqnorm(data2)
+qqline(data2)
+qqnorm(rnorm(80))
+qqline(rnorm(80))
+par(mfrow = c(1, 1))
 
+#shapiro-wilk test shows miniscule p-value
+test = shapiro.test(data2)
+str(test)
+test$p.value
+ifelse(test$p.value > 0.05, "Normal", "Non-normal")
 ########## 4a ##########
 ########## 4b ##########
