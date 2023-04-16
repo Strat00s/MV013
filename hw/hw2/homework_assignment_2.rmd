@@ -13,80 +13,100 @@ knitr::opts_chunk$set(echo = TRUE)
 Firstly, generate your own `data1` containing 100 observations. Do not forget to change set.seed() of PRNG with your UČO:
 
 ```{r}
-uco <- 235559  # insert your UCO
+uco <- 492875  # insert your UCO
 set.seed(uco)
 data1 <- round(rgamma(100, 1, 1/5), 2)
 data1 <- data1[data1 != 0]
 ```
+
 If there is a 0 present in your data. Ignore such observation. Consider that the data represent waiting time in $minutes$ in a queue at the study department of 100 randomly selected students.
 
-a)
-Fit exponential distribution with parameter $\lambda$ to your data (use the same parametrization as in the lecture). Use numerical maximization of the corresponding log-likelihood function to find the maximum likelihood estimate of $\lambda$.
-
+a)  Fit exponential distribution with parameter $\lambda$ to your data (use the same parametrization as in the lecture). Use numerical maximization of the corresponding log-likelihood function to find the maximum likelihood estimate of $\lambda$.
 
 | $\widehat{\lambda}$ |
-| -------------- |
-| `insert value` |
+|---------------------|
+| `0.170711`          |
 
-b)
-Fit lognormal distribution with parameters $\mu$ and $\sigma$ with probability density function
-$$ f(x)=\begin{cases} \frac{1}{x \sigma \sqrt{2 \pi}} \textrm{e}^{-\frac{(\log x - \mu)^2}{2\sigma^2
-}}, &\ x \geq 0, \\
-0, &\ \mbox{otherwise}
-\\ \end{cases}
-  $$
-on your data (see \verb'?dlnorm' in \verb'R' for details). Use numerical maximization of the corresponding log-likelihood function to find the maximum likelihood estimates of $\mu$ and $\sigma$.
+b)  Fit lognormal distribution with parameters $\mu$ and $\sigma$ with probability density function $$ f(x)=\begin{cases} \frac{1}{x \sigma \sqrt{2 \pi}} \textrm{e}^{-\frac{(\log x - \mu)^2}{2\sigma^2
+    }}, &\ x \geq 0, \\
+    0, &\ \mbox{otherwise}
+    \\ \end{cases}
+    $$ on your data (see \verb'?dlnorm' in \verb'R' for details). Use numerical maximization of the corresponding log-likelihood function to find the maximum likelihood estimates of $\mu$ and $\sigma$.
 
 | $\widehat{\mu}$ | $\widehat{\sigma}$ |
-|---------------|--------------------------------|
-| `insert value` | `insert value` |
+|-----------------|--------------------|
+| `1.111128`      | `1.411239`         |
 
-c)
-Plot histogram of your data together with both estimated densities.
+c)  Plot histogram of your data together with both estimated densities.
 
 ```{r, echo = FALSE, out.width = "70%"}
-# insert your code here
+negloglik_exp = function(lambda, data) {
+    return(-sum(dexp(data, lambda, log = TRUE)))
+}
+
+result = optimize(negloglik_exp, interval = c(0, 100), data = data1)
+lambda = result$minimum
+
+nll_lognorm_mu = function(mu, data) {
+    return(- sum(dlnorm(data, meanlog = mu, sdlog = 0.5, log = TRUE)))
+}
+
+result = optimize(nll_lognorm_mu, interval = c(0, 100), data = data1)
+mu = result$minimum
+
+#nll for sdlog
+nll_lognorm_sig = function(sigma, mu, data) {
+    return(- sum(dlnorm(data, meanlog = mu, sdlog = sigma, log = TRUE)))
+}
+
+result = optimize(nll_lognorm_sig, interval = c(0, 100), mu = mu, data = data1)
+sigma = result$minimum
+
+x = seq(0, max(data1), length = 100)
+hist(data1, freq = FALSE, breaks = 20)
+lines(density(data1), col = "orange", lwd = 2)
+lines(x, dexp(x, lambda), col = "red", lwd = 2)
+lines(x, dlnorm(x, meanlog = mu, sdlog = sigma),
+      col = "blue", lwd = 2)
+legend("topright", legend = c("Kernel density", "Exponential", "Lognormal"),
+       col = c("orange", "red", "blue"), lwd = 2)
 ```
 
-d)
-Which of the two models would you choose? Why? Support your conclusion with a numerical characteristic.
+d)  Which of the two models would you choose? Why? Support your conclusion with a numerical characteristic.
 
-| Chosen model | Explanation |
-|---------------|--------------------------------|
-| `insert name` | `insert text` |
+| Chosen model  | Explanation                                                                                                                                                                                                                      |
+|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Exponential` | The dataset seems to be closer to exponential distribution rather than the lognormal. Using qqnorm, the lower tail part of the dataset seems to follow the exponential distribution much better than the lognormal distribution. |
 
-
-e)
-Based on both estimated models, what is the probability that you will wait in a queue for more than 5 minutes?
+e)  Based on both estimated models, what is the probability that you will wait in a queue for more than 5 minutes?
 
 | Estimated probability for exponential model | Estimated probability for lognormal model |
-|---------------------------------------------|--------------------------------|
-| `insert` | `insert` |
+|------------------------------------------|------------------------------|
+| `0.5741019`                                 | `0.6379937`                               |
 
 ## Task 2 - Statistics I (2 points)
 
 Work with the same data as in the previous task. Use the knowledge that the data represent waiting time in **minutes** between individual events. Using your result from the previous task, estimate the number of students coming to the study department in **one hour**. Construct a corresponding confidence interval.
 
-| Estimated number of students | Confidence interval | 
-|---------------|----------------------|--------------------|
-| `insert value` | `insert bounds` | 
-
+| Estimated number of students | Confidence interval    |     |
+|------------------------------|------------------------|-----|
+| `10.24266`                   | `[4.663266, 7.051334]` |     |
 
 ## Task 3 - Normality checking (3 points)
 
-Again, start with obtaining your data as a random sample from `data1`. 
+Again, start with obtaining your data as a random sample from `data1`.
 
 ```{r}
-uco <- 235559  # insert your UCO
+uco <- 492875  # insert your UCO
 set.seed(uco)
 data2 <- sample(data1, 80)
 ```
 
 The aim of this task is to decide whether your data might come from a normal distribution. You can use any methods of your choosing, but for the purposes of this task, present only your final decision supported by one graph and the results of one statistical test.
 
-| Do your data look normal? | 
-| -------------- | 
-| `insert yes or no` | 
+| Do your data look normal? |
+|---------------------------|
+| `insert yes or no`        |
 
 ```{r, echo = FALSE, out.width = "70%"}
 # insert your code of the plot here
@@ -94,45 +114,34 @@ The aim of this task is to decide whether your data might come from a normal dis
 
 Support your claim with ONE suitable plot and a result of ONE statistical test confirming it.
 
-| Name of the test | p-value | 
-| -------------- | -------------|
-| `insert name` |  `insert value` |
-
+| Name of the test | p-value        |
+|------------------|----------------|
+| `insert name`    | `insert value` |
 
 ## Task 4 - Statistics II (4 points)
 
 In assignment 1, we worked with the **customer_behaviour2** dataset and created a new variable called `big` with values 1 (`big spender`, if the person spent more money than 5000 USD), and 0 (`low spender`, if he spent less or equal). The question is whether the big spenders are rather older people and the low spenders tend to be younger?
 
-a)
-Use a suitable model and formulate null and alternative hypotheses and choose an appropriate test.
+a)  Use a suitable model and formulate null and alternative hypotheses and choose an appropriate test.
 
 | Name of the test you used | Explanation of your choice |
-|---------------|--------------------------------|
-| `insert name` | `insert text` |
+|---------------------------|----------------------------|
+| `insert name`             | `insert text`              |
 
 Perform the test.
+
 ```{r}
 # insert your code here
 ```
 
-
 What is you conclusion?
 
-| p-value of the test | Formal conclusion | Conclusion with your own words |
-|---------------|------------|---------------------------|
-| `insert value` | `insert conclusion` | `insert text` |
+| p-value of the test | Formal conclusion   | Conclusion with your own words |
+|---------------------|---------------------|--------------------------------|
+| `insert value`      | `insert conclusion` | `insert text`                  |
 
-
-b)
-Construct the corresponding confidence interval and use it for testing your hypothesis. Do not forget to interpret your result (what does the confidence interval estimate?).
+b)  Construct the corresponding confidence interval and use it for testing your hypothesis. Do not forget to interpret your result (what does the confidence interval estimate?).
 
 | Confidence interval | Interpretation | Use for hypothesis testing and conclusion |
-|---------------|----------------------|--------------------|
-| `insert bounds` | `insert text` | `insert conclusion` |
-
-
-
-
-
-
-
+|-------------------|----------------------------|-------------------------|
+| `insert bounds`     | `insert text`  | `insert conclusion`                       |
