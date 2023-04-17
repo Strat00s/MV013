@@ -44,7 +44,6 @@ sigma = result$minimum
 mu
 sigma
 
-
 #compare results
 library(MASS)
 fitdistr(data1, "lognormal")
@@ -56,7 +55,8 @@ hist(data1, freq = FALSE, breaks = 20)
 lines(density(data1), col = "orange", lwd = 2)
 lines(x, dexp(x, lambda), col = "red", lwd = 2)
 lines(x, dlnorm(x, meanlog = mu, sdlog = sigma), col = "blue", lwd = 2)
-legend("topright", legend = c("Kernel density", "Exponential", "Lognormal"), col = c("orange", "red", "blue"), lwd = 2)
+legend("topright", legend = c("Kernel density", "Exponential", "Lognormal"),
+       col = c("orange", "red", "blue"), lwd = 2)
 
 #looks like exponential is indeed a better fit
 par(mfrow = c(1, 3))
@@ -120,5 +120,43 @@ test = shapiro.test(data2)
 str(test)
 test$p.value
 ifelse(test$p.value > 0.05, "Normal", "Non-normal")
+
+
 ########## 4a ##########
+#load data
+load("customer_behaviour2.RData")
+data$big = as.numeric(data$money_spent > 5000)
+head(data)
+big_spenders = data[data$big == 1,]$age
+small_spenders = data[data$big == 0,]$age
+
+#there probably will be a difference
+hist(big_spenders, freq = FALSE, col = rgb(1, 0, 0, 0.5))
+hist(small_spenders, freq = FALSE, col = rgb(0, 0, 1, 0.5), add = TRUE)
+lines(density(big_spenders), lwd = 2, col = "red")
+lines(density(small_spenders), lwd = 2, col = "blue")
+legend("topright", legend = c("Big", "Small"),
+       col = c("red", "blue"), lwd = 2)
+
+#H0 - There is not a significant difference between big and small spender
+#HA - There is a significant difference
+result = t.test(big_spenders, small_spenders)
+ifelse(result$p.value <0.05, "H0 rejected", "Failed to reject H0")
+#H0 rejected -> statistically significant evidence that
+    #there is a difference in age in both groups
+#failed to reject H0 -> not enough statistically significant
+    #evidence to tell if there is a difference in age of both groups
+
+#test the direction of the difference
+ifelse(mean(big_spenders) < mean(small_spenders),
+       "Big spenders are younger", "Big spenders are older")
+
+#also possible to use one-tailed t-test with:
+#H0 - Big spenders are significantly younger
+#HA - Big spenders are significantly older
+#p-value of 0.5+-0.05 tells us that there is not statistically significant 
+    #difference between the ages of both groups
+
 ########## 4b ##########
+t.test(big_spenders, small_spenders)
+

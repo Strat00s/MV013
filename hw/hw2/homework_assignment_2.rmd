@@ -75,7 +75,7 @@ legend("topright", legend = c("Kernel density", "Exponential", "Lognormal"),
 d)  Which of the two models would you choose? Why? Support your conclusion with a numerical characteristic.
 
 | Chosen model  | Explanation                                                                                                                                                                                                                      |
-|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|------------|------------------------------------------------------------|
 | `Exponential` | The dataset seems to be closer to exponential distribution rather than the lognormal. Using qqnorm, the lower tail part of the dataset seems to follow the exponential distribution much better than the lognormal distribution. |
 
 e)  Based on both estimated models, what is the probability that you will wait in a queue for more than 5 minutes?
@@ -129,24 +129,44 @@ In assignment 1, we worked with the **customer_behaviour2** dataset and created 
 
 a)  Use a suitable model and formulate null and alternative hypotheses and choose an appropriate test.
 
-| Name of the test you used | Explanation of your choice |
-|---------------------------|----------------------------|
-| `insert name`             | `insert text`              |
+| Name of the test you used | Explanation of your choice                                                                                                                                                                     |
+|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Two-sample t-test`       | `We are comparing the ages of two different groups of individuals (big spenders and low spenders) to test whether there is a statistically significant difference in their age distributions.` |
 
 Perform the test.
 
 ```{r}
-# insert your code here
+#load and process data
+load("customer_behaviour2.RData")
+data$big = as.numeric(data$money_spent > 5000)
+big_spenders = data[data$big == 1,]$age
+small_spenders = data[data$big == 0,]$age
+
+#two-tailed t-test to test if there is indeed a difference
+#H0 - There is not a significant difference between big and small spender
+#HA - There is a significant difference
+result = t.test(big_spenders, small_spenders)
+ifelse(result$p.value <0.05, "H0 rejected", "Failed to reject H0")
+
+#H0 rejected -> statistically significant evidence that
+    #there is a difference in age in both groups
+#failed to reject H0 -> not enough statistically significant
+    #evidence to tell if there is a difference in age of both groups
+
+#test the direction of the difference
+ifelse(mean(big_spenders) < mean(small_spenders),
+       "Big spenders are statistically younger",
+       "Big spenders are statistically older")
 ```
 
 What is you conclusion?
 
-| p-value of the test | Formal conclusion   | Conclusion with your own words |
-|---------------------|---------------------|--------------------------------|
-| `insert value`      | `insert conclusion` | `insert text`                  |
+| p-value of the test | Formal conclusion | Conclusion with your own words                                                                                                                                                                                                                                                                                             |
+|-------------------|---------------|-------------------------------------------------------------------|
+| `2.2e-16`           | Reject H0         | `Based on the two-tailed t-test result, I can reject the null hypothesis. This means that there is a statistically significant difference in the age of both groups. By comparing their means, I can determine the direction of this difference. This tells me that bigger spenders tend to be younger rather than older.` |
 
 b)  Construct the corresponding confidence interval and use it for testing your hypothesis. Do not forget to interpret your result (what does the confidence interval estimate?).
 
-| Confidence interval | Interpretation | Use for hypothesis testing and conclusion |
+| Confidence interval      | Interpretation                                                                                                        | Use for hypothesis testing and conclusion                                                                                                                                                                      |
 |-------------------|----------------------------|-------------------------|
-| `insert bounds`     | `insert text`  | `insert conclusion`                       |
+| `[-22.76265, -17.15859]` | `I can be 95% confident that the true difference between big and small spenders lies within the confidence interval.` | `Since I used the two-tailed t-test to test if the age groups differ, the fact that the entire confidence interval is bellow zero suggests that there is a significant difference in the ages of both groups.` |
