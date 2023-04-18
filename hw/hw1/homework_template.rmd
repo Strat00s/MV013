@@ -53,16 +53,16 @@ lines(density(data$money_spent), lwd = 2)
 Finally, compute following numerical characteristics of the variable *age*:
 
 | mean     | median | $1^{st}$ quartile | $3^{rd}$ quartile | interquartile range | variance |
-|------------|------------|------------|------------|------------|------------|
+|----------|--------|-------------------|-------------------|---------------------|----------|
 | 54.78882 | 55     | 40                | 68.5              | 28.5                | 344.7146 |
 
 Choose one appropriate measure of location and one appropriate measure of variability for the *money_spent* variable. Input the name of the measure into the following table. Briefly explain why you chose these measures.
 
-| measure of location                                                                                                                           | measure of variability                                                                                                                                            |
-|----------------------------------|--------------------------------------|
-| median                                                                                                                                        | interquartile range                                                                                                                                               |
-| --------------------                                                                                                                          | ---------------                                                                                                                                                   |
-| It is less influenced by extremes in the dataset. And as the dataset seems to be skewed, that's why I think it is a good measure of location. | I think it is a good measure of variablity, because the dataset seems to be skewed. And just like median, the IQR is less influcenced by extremes in the dataset. |
+| measure of location                              | measure of variability                                                            |
+|--------------------------------------------------|-----------------------------------------------------------------------------------|
+| median                                           | interquartile range                                                               |
+| --------------------                             | ---------------                                                                   |
+| It is less influenced by extremes in the dataset | It is less influenced by extremes in the dataset (the dataset seems to be skewed) |
 
 ## Task 3 - correlation (2 points)
 
@@ -77,17 +77,17 @@ short_data = data[, c("age", "web_visits", "mail_ads", "shop_visits")]
 sum(diag(cor_data))
 ```
 
-| Sum of diagonal elements | Explanation                                                                                                                                                                                                                                                                                                                                  |
-|-------------|-----------------------------------------------------------|
-| 4                        | The correlation matrix is a square matrix with correlation coefficient (between -1 and 1) between all variables. The value on the diagonal is a correlation of the variable with itself, which is always 1. So the sum tells us the number of variables in the correlation matrix, but it otherwise does not give us any useful information. |
+| Sum of diagonal elements | Explanation                                                                                                       |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------|
+| 4                        | It tells us that the every variable perfectly correlates with itself (and so it tells us the number of variables) |
 
 Compute and **interpret** correlation coeficients between following variables:
 
-| Variables                   | Results    | Interpretation                                                                                                             |
-|-------------|-------------|-----------------------------------------------|
-| `example`                   | 0          | The correlation is zero, which means...                                                                                    |
-| `money_spent`, `age`        | -0.6133549 | Moderately high negative correlation. This can be interpreted such that the older people were, the less money they spent.  |
-| `money_spent`, `web_visits` | 0.3725449  | Moderate possitive correlation. This indicates that people who visited the eshop website more often also spent more money. |
+| Variables                   | Results    | Interpretation                                                                                                 |
+|-----------------------------|------------|----------------------------------------------------------------------------------------------------------------|
+| `example`                   | 0          | The correlation is zero, which means...                                                                        |
+| `money_spent`, `age`        | -0.6133549 | Moderately high negative correlation. Seems that the older people are, the less money they spend.              |
+| `money_spent`, `web_visits` | 0.3725449  | Moderate possitive correlation. Seems that the more people visit the eshop website, the more money they spend. |
 
 Interpretation in the form "correlation coefficient is 0.8 which means the correlation is high" will not be accepted.
 
@@ -97,35 +97,31 @@ Use PCA on the dataset from the previous task (**customer_behaviour2**, excludin
 
 | Number of components used |
 |---------------------------|
-| 3                         |
+| 2                         |
 
 State which variable has the most influence on each component.
 
 | \-                      | Component 1 | Component 2 | Component 3 | Component 4 |
-|-------------------|--------------|--------------|--------------|--------------|
-| most impactful variable | age         | mail_ads    | mail_ads    | age         |
+|-------------------------|-------------|-------------|-------------|-------------|
+| most impactful variable | web_visits  | age         | mail_ads    | shop_visits |
 
 Create a scatter plot of data points using the first two components. Plot the points in different colours depending on the value of the *big* variable. What is your evaluation of the final plot? Can you decipher from the plot which variable(s) seems best at separating *big* shoppers from the customers who spend less?
 
 ```{r, include = T}
-#Either graph will do. The autoplot has loadings which nicely visualize
-#the main variables that seperate the spenders (age and web_visits)
-short_data.pca <- prcomp(short_data, center = T, scale = T)
+short_data.pca <- prcomp(short_data, center = T, scale = F)
 pca_scores = predict(short_data.pca, short_data)
 df = data.frame(PC1 = pca_scores[, 1], PC2 = pca_scores[, 2], big = data$big)
 library(ggplot2)
-library(ggfortify)
-#biplot is a type of scatter plot
-autoplot(short_data.pca, data = df, shape = T, 
-         colour = ifelse(data$big == 1, 'black', 'red'), loadings = TRUE, 
-         loadings.label = TRUE, loadings.color = "blue", 
-         loadings.label.color = "blue") +
-    geom_point(color = ifelse(data$big == 1, "black", "red")) + 
-    annotate("text", x = Inf, y = Inf, hjust = 1, vjust = 1, 
-             label = c("Heavy spender", "\nLight spender"), 
-             color = c("black", "red"))
+ggplot(df, aes(x = PC1, y = PC2, color = factor(big))) + 
+    geom_point()
 ```
 
-| Scatter plot evaluation                                                                                                                                                                                                      | Which variable(s) best separates heavy spenders                                                                                                                                                                                                                                             |
-|--------------------------------|----------------------------------------|
-| I can see that both light and heavy spenders do mix quite a bit around center of the graph, but there are regions dominated mostly by either a heavy or light spenders. So it seems that there is a difference between them. | Age and web_visits. From the graph it seems that the older people were, the less money they spent. I can also see that the more people visited the eshop website, the more money they spent. So age had a negative impact on the money spent while visitation count had a possitive impact. |
+| Scatter plot evaluation                     | Which variable(s) best separates heavy spenders |
+|---------------------------------------------|-------------------------------------------------|
+| I can see that both groups (light and heavy |                                                 |
+
+spenders) do mix quite a bit in the center.\
+There is a difference between them, but they\
+do mix. \| Age and web_visited variables. It seems that heavy\
+spenders visit the eshop more often and are younger while\
+light spenders are older and visit it less. \|

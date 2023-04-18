@@ -77,8 +77,8 @@ ifelse(aic_exp < aic_ln, "Exp better", "Ln better")
 
 
 ########## 1d ##########
-exp_wait = pexp(5, lambda)
-ln_wait = plnorm(5, mu, sigma)
+exp_wait = pexp(5, lambda, lower.tail = FALSE)
+ln_wait = plnorm(5, mu, sigma, lower.tail = FALSE)
 exp_wait
 ln_wait
 
