@@ -69,8 +69,7 @@ qqnorm(dlnorm(x, meanlog = mu, sdlog = sigma), main = "Lognormal distribution")
 qqline(dlnorm(x, meanlog = mu, sdlog = sigma))
 par(mfrow = c(1, 1))
 
-#again, exp seems to be a better fit
-#akaike
+#using akaike, exp again seems to be a better fit
 aic_exp = 2 * (negloglik_exp(lambda, data1)) + 2
 aic_ln = 2 * (nll_lognorm_sig(sigma, mu, data1)) + 2*2
 ifelse(aic_exp < aic_ln, "Exp better", "Ln better")
@@ -138,25 +137,41 @@ lines(density(small_spenders), lwd = 2, col = "blue")
 legend("topright", legend = c("Big", "Small"),
        col = c("red", "blue"), lwd = 2)
 
+
+
+
+#Using one-tailed t-test:
+#H0 - There is no significant difference between the mean age of
+    #big spenders and the mean age of small spenders, or the mean age of
+    #big spenders is less than or equal to the mean age of small spenders.
+#HA - The mean age of big spenders is significantly greater than 
+    #the mean age of small spenders.
+t.test(big_spenders, small_spenders, alternative = "greater", var.equal = TRUE)
+
+#p-value = 1 -> cannot reject H0 -> not enough evidence to support HA
+#And as t-statistic is relatively large and negative and comparing the means
+    #it seems that big spenders are actually younger
+
+
+#Using two-tailed t-test:
 #H0 - There is not a significant difference between big and small spender
 #HA - There is a significant difference
-result = t.test(big_spenders, small_spenders)
-ifelse(result$p.value <0.05, "H0 rejected", "Failed to reject H0")
+
+#result = t.test(big_spenders, small_spenders)
+#ifelse(result$p.value <0.05, "H0 rejected", "Failed to reject H0")
+
 #H0 rejected -> statistically significant evidence that
     #there is a difference in age in both groups
 #failed to reject H0 -> not enough statistically significant
     #evidence to tell if there is a difference in age of both groups
 
 #test the direction of the difference
-ifelse(mean(big_spenders) < mean(small_spenders),
-       "Big spenders are younger", "Big spenders are older")
 
-#also possible to use one-tailed t-test with:
-#H0 - Big spenders are significantly younger
-#HA - Big spenders are significantly older
-#p-value of 0.5+-0.05 tells us that there is not statistically significant 
-    #difference between the ages of both groups
+#ifelse(mean(big_spenders) < mean(small_spenders),
+#       "Big spenders are younger", "Big spenders are older")
+
+#Does this make sense?^^^
 
 ########## 4b ##########
-t.test(big_spenders, small_spenders)
+t.test(big_spenders, small_spenders, var = TRUE)
 
