@@ -74,9 +74,9 @@ legend("topright", legend = c("Kernel density", "Exponential", "Lognormal"),
 
 d)  Which of the two models would you choose? Why? Support your conclusion with a numerical characteristic.
 
-| Chosen model  | Explanation                                                                                                                                                                                                                      |
-|------------|------------------------------------------------------------|
-| `Exponential` | The dataset seems to be closer to exponential distribution rather than the lognormal. Using qqnorm, the lower tail part of the dataset seems to follow the exponential distribution much better than the lognormal distribution. |
+| Chosen model  | Explanation                                                                                                                                                                                                                                                       |
+|----------------------------------|--------------------------------------------------------|
+| `Exponential` | The dataset seems to be closer to exponential distribution rather than the lognormal. Using Akaike test give smaller value for exponential distribution, which suggests that the data are closer to exponential distribution rather than lognormal distribution.  |
 
 e)  Based on both estimated models, what is the probability that you will wait in a queue for more than 5 minutes?
 
@@ -130,7 +130,7 @@ In assignment 1, we worked with the **customer_behaviour2** dataset and created 
 a)  Use a suitable model and formulate null and alternative hypotheses and choose an appropriate test.
 
 | Name of the test you used | Explanation of your choice                                                                                                                                                                     |
-|--------------|----------------------------------------------------------|
+|----------------------------------|--------------------------------------------------------------------|
 | `Two-sample t-test`       | `We are comparing the ages of two different groups of individuals (big spenders and low spenders) to test whether there is a statistically significant difference in their age distributions.` |
 
 Perform the test.
@@ -157,11 +157,11 @@ t.test(big_spenders, small_spenders, alternative = "greater")
 What is you conclusion?
 
 | p-value of the test | Formal conclusion | Conclusion with your own words                                                                                                                                                                                                                                     |
-|----------|----------|-----------------------------------------------------|
+|---------------|--------------------|--------------------------------------------------------------------|
 | `1`                 | Fail to reject H0 | `Based on the result of the one-tailed t-test, I fail to reject the null hypothesis. This means that I don't have enough evidence to support the claim that big spenders are older than small spenders. The analysis even suggests that big spenders are younger.` |
 
 b)  Construct the corresponding confidence interval and use it for testing your hypothesis. Do not forget to interpret your result (what does the confidence interval estimate?).
 
 | Confidence interval | Interpretation                                                                                                        | Use for hypothesis testing and conclusion                                                                                                                                                                                                                               |
-|--------------|--------------------|--------------------------------------|
+|-------------------------|-----------------------------|--------------------------------------------------|
 | `[-22.76265, inf]`  | `I can be 95% confident that the true difference between big and small spenders lies within the confidence interval.` | `Since the confidence interval for the difference in means includes values below 0, we cannot reject the null hypothesis. And based on the 95% confidence interval, there is not enough evidence to support the claim that big spenders are older than small spenders.` |

@@ -173,5 +173,5 @@ t.test(big_spenders, small_spenders, alternative = "greater", var.equal = TRUE)
 #Does this make sense?^^^
 
 ########## 4b ##########
-t.test(big_spenders, small_spenders, var = TRUE)
+t.test(big_spenders, small_spenders, alternative = "greater", var.equal = TRUE)
 
