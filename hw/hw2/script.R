@@ -1,12 +1,12 @@
 #generate data
-uco <- 492875  # insert your UCO
+uco <- 527330#492875  # insert your UCO
 set.seed(uco)
 data1 <- round(rgamma(100, 1, 1/5), 2)
 data1 <- data1[data1 != 0]
 n = length(data1)
 
 
-########## 1a ##########
+---------- 1a ----------
 negloglik_exp = function(lambda, data) {
     return(-sum(dexp(data, lambda, log = TRUE)))
 }
@@ -21,7 +21,7 @@ lambda
 (1/mean(data1))
 
 
-########## 1b ##########
+---------- 1b ----------
 #nll for meanlog
 nll_lognorm_mu = function(mu, data) {
     return(- sum(dlnorm(data, meanlog = mu, sdlog = 0.5, log = TRUE)))
@@ -49,7 +49,7 @@ library(MASS)
 fitdistr(data1, "lognormal")
 
 
-########## 1c ##########
+---------- 1c ----------
 x = seq(0, max(data1), length = 100)
 hist(data1, freq = FALSE, breaks = 20)
 lines(density(data1), col = "orange", lwd = 2)
@@ -75,28 +75,30 @@ aic_ln = 2 * (nll_lognorm_sig(sigma, mu, data1)) + 2*2
 ifelse(aic_exp < aic_ln, "Exp better", "Ln better")
 
 
-########## 1d ##########
+#---------- 1d ----------
 exp_wait = pexp(5, lambda, lower.tail = FALSE)
 ln_wait = plnorm(5, mu, sigma, lower.tail = FALSE)
 exp_wait
 ln_wait
 
 
-########## 2  ##########
+#--------- 2  ----------
 #lambda - mean of events per interval (1 minute)
 #number of events in an hour -> 60*lambda
 student_num = lambda * 60
-student_num
 
 #we can assume our data distribution is normal (clt)
 sample_mean = mean(data1)
 sample_sd = sd(data1) / sqrt(n)
 t_critical = qt(0.975, n - 1)
-conf_int = c(sample_mean - t_critical * sample_sd, sample_mean + t_critical * sample_sd)
+conf_int = c(student_num - t_critical * sample_sd,
+             student_num + t_critical * sample_sd)
+student_num
 conf_int
 
-########## 3  ##########
-uco <- 492875  # insert your UCO
+
+#--------- 3  ----------
+uco <- 527330#492875  # insert your UCO
 set.seed(uco)
 data2 <- sample(data1, 80)
 
@@ -115,21 +117,21 @@ qqline(rnorm(80))
 par(mfrow = c(1, 1))
 
 #shapiro-wilk test shows miniscule p-value
-test = shapiro.test(data2)
-str(test)
-test$p.value
-ifelse(test$p.value > 0.05, "Normal", "Non-normal")
+library(fBasics)
+result = lillieTest(data2)
+#test = shapiro.test(data2)
+str(result)
+result@test$p.value
+ifelse(result@test$p.value > 0.05, "Normal", "Non-normal")
 
 
-########## 4a ##########
+#--------- 4a ----------
 #load data
 load("customer_behaviour2.RData")
 data$big = as.numeric(data$money_spent > 5000)
-head(data)
 big_spenders = data[data$big == 1,]$age
 small_spenders = data[data$big == 0,]$age
 
-#there probably will be a difference
 hist(big_spenders, freq = FALSE, col = rgb(1, 0, 0, 0.5))
 hist(small_spenders, freq = FALSE, col = rgb(0, 0, 1, 0.5), add = TRUE)
 lines(density(big_spenders), lwd = 2, col = "red")
@@ -138,22 +140,50 @@ legend("topright", legend = c("Big", "Small"),
        col = c("red", "blue"), lwd = 2)
 
 
+lillieTest(big_spenders)        #not normal
+lillieTest(small_spenders)      #normal
+shapiro.test(big_spenders)      #not normal
+shapiro.test(small_spenders)    #not normal
+
+##new solution using Wilcoxon
+#(same H0 and HA as in t-test below)
+wilcox.test(big_spenders, small_spenders, alternative = "greater",
+            conf.int = TRUE)
 
 
-#Using one-tailed t-test:
+#--------- Start of an old solution using two-sample t-test ----------
+#Since the data are actually not normal (or not normal enough),
+#   two-sample t-test shouldn't be used.
+#I used it before I realized that the data samples were not actually
+#   normal (since they looked normal enough on the histogram so I didn't
+#   bother with a normality test).
+#But using Shapiro and Lilliesfors test I found out that 
+#   either neither or at least one dataset is not normal. 
+#So I switched to Wilcox as that should be used when the datasets are not normal
+#Interestingly I got pretty much the same results.
+#   (so I guess the datasets were normal enough?)
+
+
+#test variability
+var(big_spenders)
+var(small_spenders)
+var.test(big_spenders, small_spenders)
+#very close, can continue with two-sample t-test
+
+##Using one-tailed t-test (pretty much same as Wilcoxon above):
 #H0 - There is no significant difference between the mean age of
-    #big spenders and the mean age of small spenders, or the mean age of
-    #big spenders is less than or equal to the mean age of small spenders.
+#   big spenders and the mean age of small spenders, or the mean age of
+#   big spenders is less than or equal to the mean age of small spenders.
 #HA - The mean age of big spenders is significantly greater than 
-    #the mean age of small spenders.
+#   the mean age of small spenders.
 t.test(big_spenders, small_spenders, alternative = "greater", var.equal = TRUE)
 
 #p-value = 1 -> cannot reject H0 -> not enough evidence to support HA
 #And as t-statistic is relatively large and negative and comparing the means
-    #it seems that big spenders are actually younger
+#   it seems that big spenders are actually younger
 
 
-#Using two-tailed t-test:
+##Using two-tailed t-test (also a possible sollution?):
 #H0 - There is not a significant difference between big and small spender
 #HA - There is a significant difference
 
@@ -161,17 +191,15 @@ t.test(big_spenders, small_spenders, alternative = "greater", var.equal = TRUE)
 #ifelse(result$p.value <0.05, "H0 rejected", "Failed to reject H0")
 
 #H0 rejected -> statistically significant evidence that
-    #there is a difference in age in both groups
+#   there is a difference in age in both groups
 #failed to reject H0 -> not enough statistically significant
-    #evidence to tell if there is a difference in age of both groups
+#    evidence to tell if there is a difference in age of both groups
 
 #test the direction of the difference
 
 #ifelse(mean(big_spenders) < mean(small_spenders),
 #       "Big spenders are younger", "Big spenders are older")
+#--------- End of an old solution ----------
 
-#Does this make sense?^^^
-
-########## 4b ##########
+#--------- 4b ----------
 t.test(big_spenders, small_spenders, alternative = "greater", var.equal = TRUE)
-
