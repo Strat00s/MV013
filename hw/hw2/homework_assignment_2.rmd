@@ -62,35 +62,35 @@ nll_lognorm_sig = function(sigma, mu, data) {
 result = optimize(nll_lognorm_sig, interval = c(0, 100), mu = mu, data = data1)
 sigma = result$minimum
 
-x = seq(0, max(data1), length = 100)
-hist(data1, freq = FALSE, breaks = 20)
+#plot it
+x = seq(0, max(data1), 0.2)
+hist(data1, ylim = c(0, 0.25), freq = FALSE)#ylim to show the lines properly
 lines(density(data1), col = "orange", lwd = 2)
 lines(x, dexp(x, lambda), col = "red", lwd = 2)
-lines(x, dlnorm(x, meanlog = mu, sdlog = sigma),
-      col = "blue", lwd = 2)
+lines(x, dlnorm(x, meanlog = mu, sdlog = sigma), col = "blue", lwd = 2)
 legend("topright", legend = c("Kernel density", "Exponential", "Lognormal"),
        col = c("orange", "red", "blue"), lwd = 2)
 ```
 
 d)  Which of the two models would you choose? Why? Support your conclusion with a numerical characteristic.
 
-| Chosen model  | Explanation                                                                                                                                                                                                                                                      |
-|---------------------------|--------------------------------------------|
-| `Exponential` | The dataset seems to be closer to exponential distribution rather than the lognormal. Using Akaike test give smaller value for exponential distribution, which suggests that the data are closer to exponential distribution rather than lognormal distribution. |
+| Chosen model  | Explanation                                                                                                                                                                                                                                                |
+|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Exponential` | The dataset seems to be closer to exponential distribution rather than the lognormal. Using AIC I get a smaller value for exponential distribution, which suggests that the data is closer to exponential distribution rather than lognormal distribution. |
 
 e)  Based on both estimated models, what is the probability that you will wait in a queue for more than 5 minutes?
 
 | Estimated probability for exponential model | Estimated probability for lognormal model |
-|-------------------------------------|-----------------------------------|
+|---------------------------------------------|-------------------------------------------|
 | 0.4258981                                   | 0.3620063                                 |
 
 ## Task 2 - Statistics I (2 points)
 
 Work with the same data as in the previous task. Use the knowledge that the data represent waiting time in **minutes** between individual events. Using your result from the previous task, estimate the number of students coming to the study department in **one hour**. Construct a corresponding confidence interval.
 
-| Estimated number of students | Confidence interval    |     |
-|------------------------------|------------------------|-----|
-| `10.24266`                   | `[4.663266, 7.051334]` |     |
+| Estimated number of students | Confidence interval   |     |
+|------------------------------|-----------------------|-----|
+| `10.24266`                   | `9.048628, 11.436695` |     |
 
 ## Task 3 - Normality checking (3 points)
 
@@ -109,19 +109,19 @@ The aim of this task is to decide whether your data might come from a normal dis
 | `no`                      |
 
 ```{r, echo = FALSE, out.width = "70%"}
-par(mfrow = c(1, 2))
-qqnorm(data2, main = "Data2")
-qqline(data2)
-nd = rnorm(80)
-qqnorm(nd, main = "Normal distribution")
-qqline(nd)
+x = seq(0, max(data2), 0.2)
+hist(data2, freq = FALSE)
+lines(density(data2), lwd = 2)
+lines(x, (dnorm(x, mean(data2), sd(data2))), lwd = 2, col = "red")
+legend("topright", legend = c("Kernel density", "Normal distribution"),
+       col = c("black", "red"), lwd = 2)
 ```
 
 Support your claim with ONE suitable plot and a result of ONE statistical test confirming it.
 
-| Name of the test    | p-value        |
-|---------------------|----------------|
-| `Shapiro-Wilk Test` | `8.439703e-09` |
+| Name of the test  | p-value        |
+|-------------------|----------------|
+| `Lilliefors Test` | `1.010312e-05` |
 
 ## Task 4 - Statistics II (4 points)
 
@@ -129,9 +129,9 @@ In assignment 1, we worked with the **customer_behaviour2** dataset and created 
 
 a)  Use a suitable model and formulate null and alternative hypotheses and choose an appropriate test.
 
-| Name of the test you used | Explanation of your choice                                                                                                         |
-|--------------------------------|------------------------------------------------------------------|
-| `Two-sample Wilcox Test`  | `We are testing two independant groups which seem to have non-normal distribution. Specifically I want to use one-tailed version.` |
+| Name of the test you used | Explanation of your choice                                                                                                          |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `Two-sample Wilcox Test`  | `We are testing two independant groups which seem to have non-normal distributions. Specifically I want to use one-tailed version.` |
 
 Perform the test.
 
@@ -150,19 +150,18 @@ small_spenders = data[data$big == 0,]$age
 wilcox.test(big_spenders, small_spenders, alternative = "greater",
             conf.int = TRUE)
 
-#p-value = 1 -> cannot reject H0 -> not enough evidence to support HA
-#And looking at difference in location and CI, it seems
-#   it seems that big spenders are actually younger
+#p-value = 1 -> fail to reject H0 -> not enough evidence to support HA
+#Analysis might even suggest that big spenders might be younger
 ```
 
 What is you conclusion?
 
 | p-value of the test | Formal conclusion | Conclusion with your own words                                                                                                                                                                                                                |
-|---------------|---------------|-------------------------------------------|
+|---------------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `1`                 | Fail to reject H0 | `Based on the result I fail to reject the null hypothesis. This means that I don't have enough evidence to support the claim that big spenders are older than small spenders. The analysis even suggests that big spenders might be younger.` |
 
 b)  Construct the corresponding confidence interval and use it for testing your hypothesis. Do not forget to interpret your result (what does the confidence interval estimate?).
 
 | Confidence interval | Interpretation                                                                                                        | Use for hypothesis testing and conclusion                                                                                                                                                                                                                                  |
-|------------------------|--------------------|----------------------------------|
-| `[-23.00007, inf]`  | `I can be 95% confident that the true difference between big and small spenders lies within the confidence interval.` | `Since the confidence interval for the difference in location includes values below 0, we cannot reject the null hypothesis. And based on the 95% confidence interval, there is not enough evidence to support the claim that big spenders are older than small spenders.` |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `-23.00007, inf`    | `I can be 95% confident that the true difference between big and small spenders lies within the confidence interval.` | `Since the confidence interval for the difference in location includes values below 0, we cannot reject the null hypothesis. And based on the 95% confidence interval, there is not enough evidence to support the claim that big spenders are older than small spenders.` |

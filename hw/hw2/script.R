@@ -1,12 +1,12 @@
 #generate data
-uco <- 527330#492875  # insert your UCO
+uco <- 492875  # insert your UCO
 set.seed(uco)
 data1 <- round(rgamma(100, 1, 1/5), 2)
 data1 <- data1[data1 != 0]
 n = length(data1)
 
 
----------- 1a ----------
+#--------- 1a ----------
 negloglik_exp = function(lambda, data) {
     return(-sum(dexp(data, lambda, log = TRUE)))
 }
@@ -21,7 +21,7 @@ lambda
 (1/mean(data1))
 
 
----------- 1b ----------
+#--------- 1b ----------
 #nll for meanlog
 nll_lognorm_mu = function(mu, data) {
     return(- sum(dlnorm(data, meanlog = mu, sdlog = 0.5, log = TRUE)))
@@ -49,9 +49,9 @@ library(MASS)
 fitdistr(data1, "lognormal")
 
 
----------- 1c ----------
-x = seq(0, max(data1), length = 100)
-hist(data1, freq = FALSE, breaks = 20)
+#---------- 1c ----------
+x = seq(0, max(data1), 0.2)
+hist(data1, ylim = c(0, 0.25), freq = FALSE)#ylim to show the lines properly
 lines(density(data1), col = "orange", lwd = 2)
 lines(x, dexp(x, lambda), col = "red", lwd = 2)
 lines(x, dlnorm(x, meanlog = mu, sdlog = sigma), col = "blue", lwd = 2)
@@ -98,31 +98,36 @@ conf_int
 
 
 #--------- 3  ----------
-uco <- 527330#492875  # insert your UCO
+uco <- 492875  # insert your UCO
 set.seed(uco)
 data2 <- sample(data1, 80)
 
 #we can see even from histogram that it probably isn't normal
-x = seq(0, max(data2), length = length(data2))
+x = seq(0, max(data2), 0.2)
 hist(data2, freq = FALSE)
 lines(density(data2), lwd = 2)
-lines(density(rnorm(80)), lwd = 2, col = "red")
+lines(x, (dnorm(x, mean(data2), sd(data2))), lwd = 2, col = "red")
+legend("topright", legend = c("Kernel density", "Normal distribution"),
+       col = c("black", "red"), lwd = 2)
 
-#ggplot once again nicely shows the difference
+#ggplot once again nicely shows the difference (but they are 2 plots)
 par(mfrow = c(1, 2))
 qqnorm(data2)
-qqline(data2)
-qqnorm(rnorm(80))
-qqline(rnorm(80))
+nd = rnorm(80)
+qqnorm(nd)
 par(mfrow = c(1, 1))
 
-#shapiro-wilk test shows miniscule p-value
+
+#shapiro-wilk test is apparently not good for datasets with more than 50 samples
+#   (yet R has an extended implementation which supports up to 5000 samples)
+#Using Lilliesfors test instead
 library(fBasics)
 result = lillieTest(data2)
 #test = shapiro.test(data2)
 str(result)
 result@test$p.value
 ifelse(result@test$p.value > 0.05, "Normal", "Non-normal")
+#miniscule values (shapiro also gave miniscule value) -> not normal
 
 
 #--------- 4a ----------
@@ -181,25 +186,8 @@ t.test(big_spenders, small_spenders, alternative = "greater", var.equal = TRUE)
 #p-value = 1 -> cannot reject H0 -> not enough evidence to support HA
 #And as t-statistic is relatively large and negative and comparing the means
 #   it seems that big spenders are actually younger
-
-
-##Using two-tailed t-test (also a possible sollution?):
-#H0 - There is not a significant difference between big and small spender
-#HA - There is a significant difference
-
-#result = t.test(big_spenders, small_spenders)
-#ifelse(result$p.value <0.05, "H0 rejected", "Failed to reject H0")
-
-#H0 rejected -> statistically significant evidence that
-#   there is a difference in age in both groups
-#failed to reject H0 -> not enough statistically significant
-#    evidence to tell if there is a difference in age of both groups
-
-#test the direction of the difference
-
-#ifelse(mean(big_spenders) < mean(small_spenders),
-#       "Big spenders are younger", "Big spenders are older")
-#--------- End of an old solution ----------
+#--------- End the an old solution ----------
 
 #--------- 4b ----------
 t.test(big_spenders, small_spenders, alternative = "greater", var.equal = TRUE)
+
