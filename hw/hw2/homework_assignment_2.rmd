@@ -75,13 +75,13 @@ legend("topright", legend = c("Kernel density", "Exponential", "Lognormal"),
 d)  Which of the two models would you choose? Why? Support your conclusion with a numerical characteristic.
 
 | Chosen model  | Explanation                                                                                                                                                                                                                                                |
-|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|----------------|-------------------------------------------------------|
 | `Exponential` | The dataset seems to be closer to exponential distribution rather than the lognormal. Using AIC I get a smaller value for exponential distribution, which suggests that the data is closer to exponential distribution rather than lognormal distribution. |
 
 e)  Based on both estimated models, what is the probability that you will wait in a queue for more than 5 minutes?
 
 | Estimated probability for exponential model | Estimated probability for lognormal model |
-|---------------------------------------------|-------------------------------------------|
+|-------------------------------------|-----------------------------------|
 | 0.4258981                                   | 0.3620063                                 |
 
 ## Task 2 - Statistics I (2 points)
@@ -130,7 +130,7 @@ In assignment 1, we worked with the **customer_behaviour2** dataset and created 
 a)  Use a suitable model and formulate null and alternative hypotheses and choose an appropriate test.
 
 | Name of the test you used | Explanation of your choice                                                                                                          |
-|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+|----------------|--------------------------------------------------------|
 | `Two-sample Wilcox Test`  | `We are testing two independant groups which seem to have non-normal distributions. Specifically I want to use one-tailed version.` |
 
 Perform the test.
@@ -157,11 +157,11 @@ wilcox.test(big_spenders, small_spenders, alternative = "greater",
 What is you conclusion?
 
 | p-value of the test | Formal conclusion | Conclusion with your own words                                                                                                                                                                                                                |
-|---------------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|----------|----------|----------------------------------------------------|
 | `1`                 | Fail to reject H0 | `Based on the result I fail to reject the null hypothesis. This means that I don't have enough evidence to support the claim that big spenders are older than small spenders. The analysis even suggests that big spenders might be younger.` |
 
 b)  Construct the corresponding confidence interval and use it for testing your hypothesis. Do not forget to interpret your result (what does the confidence interval estimate?).
 
 | Confidence interval | Interpretation                                                                                                        | Use for hypothesis testing and conclusion                                                                                                                                                                                                                                  |
-|---------------------|-----------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|--------------|-----------------|------------------------------------------|
 | `-23.00007, inf`    | `I can be 95% confident that the true difference between big and small spenders lies within the confidence interval.` | `Since the confidence interval for the difference in location includes values below 0, we cannot reject the null hypothesis. And based on the 95% confidence interval, there is not enough evidence to support the claim that big spenders are older than small spenders.` |
