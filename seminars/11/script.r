@@ -17,8 +17,8 @@ silver <- prices$silver
 
 # plot the dependence of the time on the gold price and silver price (2 figures):
 
-plot()
-plot()
+plot(time, gold, xlab="time",ylab="price of gold")
+plot(time, silver, xlab="time",ylab="price of silver")
 
 
 # ....................................... A ....................................
@@ -28,16 +28,22 @@ plot()
 
 # HINT: use lm() function:
 
-?lm
+#?lm
 
 model_silver_1 <- lm(silver ~ time)
+model_gold_1 <- lm(gold ~ time)
 
 (sum_silver_1 <- summary(model_silver_1))
+(sum_gold_1 <- summary(model_gold_1))
 
 # diagnostic graphs:
 
 par(mfrow = c(2, 2))
 plot(model_silver_1)
+par(mfrow = c(1, 1))
+
+par(mfrow = c(2, 2))
+plot(model_gold_1)
 par(mfrow = c(1, 1))
 
 # residuals do not look independent and normally distributed with the same variance
@@ -50,13 +56,13 @@ str(model_silver_1)
 
 # select the coefficients of the model and complete the line prescription:
 
-coeffs <- 
-silver_line <-  +  * as.numeric(time)
+coeffs <- model_silver_1$coefficients
+silver_line <- coeffs[1] + coeffs[2] * as.numeric(time)
 
 # plot the result line together with the original data:
 
-plot(, , type = 'l')
-lines(, , type = 'l', col = 'red')
+plot(time, silver, type = 'l')
+lines(time, silver_line, type = 'l', col = 'red')
 
 # quality of the model (adjusted R squared, AIC):
 
@@ -65,8 +71,8 @@ lines(, , type = 'l', col = 'red')
 str(sum_silver_1)
 ?AIC
 
-sum_silver_1[]
-AIC()
+sum_silver_1[c("r.squared", "adj.r.squared")]
+AIC(model_silver_1)
 
 # prediction:
 
@@ -74,7 +80,7 @@ AIC()
 
 # 1) use the regression line prescription: pred = a + b * time:
 
- +  * as.numeric(as.Date("2013-04-25"))
+pred = coeffs[1] + coeffs[2] * as.numeric(as.Date("2013-04-25"))
 
 # 2) use the built-in function predict()
 
@@ -82,9 +88,8 @@ AIC()
 
 ?predict
 
-data_new <- data.frame()
-predict(, data_new)
-
+data_new <- data.frame(time = as.Date("2013-04-25"))
+predict(model_silver_1, data_new)
 
 # ....................................... B ....................................
 
@@ -93,14 +98,14 @@ predict(, data_new)
 
 silver_log <- log(silver)
 
-model_silver_2 <- lm()
+model_silver_2 <- lm(silver_log ~ time)
 
-sum_silver_2 <- 
+sum_silver_2 <- summary(model_silver_2)
 
 # the diagnostic graphs:
 
 par(mfrow = c(2, 2))
-plot()
+plot(model_silver_2)
 par(mfrow = c(1, 1))
 
 # the pressumptions of the linear regression model seems to be more realistic then before
@@ -109,14 +114,14 @@ par(mfrow = c(1, 1))
 
 # HINT: choose the coefficients from the model_silver_2:
 
-coeffs <- 
+coeffs <- model_silver_2$coefficients
 
 # write the regression line prescription:
 
-silver_line_2 <-  +  * as.numeric(time)
+silver_line_2 <- coeffs[1] + coeffs[2] * as.numeric(time)
 
-plot(, , type = 'l')
-lines(, , type = 'l', col = 'red')
+plot(time, silver_log, type = 'l')
+lines(time, silver_line_2, type = 'l', col = 'red')
 
 # finally, plot the original silver data together with the final regression curve
 
@@ -124,15 +129,15 @@ lines(, , type = 'l', col = 'red')
 # transformation to both: logarithm of silver (the result should be the original
 # silver data sample) and the regression line
 
-silver_exp <- 
+silver_exp <- exp(silver_line_2)
 
 plot(time, silver, type = 'l')
 lines(time, silver_exp, type = 'l', col = 'red')
 
 # quality of the model:
 
-sum_silver_2[]
-AIC()
+sum_silver_2[c("r.squared", "adj.r.squared", "sigma")]
+AIC(model_silver_2)
 
 # prediction:
 
@@ -179,9 +184,10 @@ comp[, c(1, 2, 3, 9)] <- lapply(comp[, c(1, 2, 3, 9)], as.numeric)
 
 ?lm
 
-model_1_A <- 
-model_1_B <- 
-model_1_C <- 
+model_1_A <- lm(price ~ speed + ram, data=comp)
+model_1_B <- lm(price ~ speed:ram, data=comp)
+model_1_C <- lm(price ~ speed * ram, data=comp)
+#model_1_C <- lm(price ~ speed + ram + speed:ram, data=comp) same as above
 
 summary(model_1_A)
 summary(model_1_B)
@@ -190,7 +196,7 @@ summary(model_1_C)
 # the diagnostic plots of the best model:
 
 par(mfrow = c(2, 2))
-plot()
+plot(model_1_C)
 par(mfrow = c(1, 1))
 
 # store the summary of the best model:
@@ -203,7 +209,8 @@ sum_1 <- summary()
 
 # Create a full linear regression model considering all the variables.
 
-model_2 <- 
+model_2 <- lm(price ~ speed + hd + ram + screen + cd + multi + premium + trend, data=comp)
+model_2 <- lm(price ~ ., data=comp) #same as above
 
 (sum_2 <- summary(model_2))
 
@@ -223,7 +230,7 @@ par(mfrow = c(1, 1))
 # HINT: all variables can be specified by "." notation, for example price ~ .
 # the "." can be also squared:
 
-model_3 <- 
+model_3 <- lm(price ~ . + .^2, data=comp)
 
 (sum_3 <- summary(model_3))
 
