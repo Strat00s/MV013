@@ -10,48 +10,45 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Task 1 - Modern statistical methods (4 points)
 
-First, load the data from the file `women.csv`. The data contains information about IQ and weight in $kg$ of 30
-randomly selected women.
+First, load the data from the file `women.csv`. The data contains information about IQ and weight in $kg$ of 30 randomly selected women.
 
+a)  Compute the value of Pearson correlation coefficient for `IQ` and `weight`. Compute the 95% confidence interval for the true correlation coefficient. Round all the results to **three** decimal places.
 
-a) Compute the value of Pearson correlation coefficient for `IQ` and `weight`.
-Compute the 95% confidence interval for the true correlation coefficient.
-Round all the results to **three** decimal places.
++----------------------------------+----------------------+----------------------+
+| correlation coefficient estimate | lower bound for CI   | upper bound for CI   |
++==================================+======================+======================+
+| `-0.053`                         | `-0.406`             | `0.313`              |
++----------------------------------+----------------------+----------------------+
 
-| correlation coefficient estimate | lower bound for CI | upper bound for CI|
-| ------------- |------------- |------------- |
-| `insert` |`insert` |`insert` |
+b)  Use nonparametric bootstrap (perform 10 000 replications) to estimate 95% confidence interval (percentile) for the true correlation coefficient. Round the results to **three** decimal points.
 
-b) Use nonparametric bootstrap (perform 10 000 replications) to estimate 95% confidence interval (percentile) for the true correlation coefficient. Round the results to **three** decimal points.
+| lower bound for bootstrap CI | upper bound for bootstrap CI |
+|------------------------------|------------------------------|
+| -0.443                       | `0.34`                       |
 
-| lower bound for bootstrap CI | upper bound for bootstrap CI|
-|------------- |------------- |
-|`insert` |`insert` |
+c)  Assume that the data come from a bivariate normal distribution. Is there a connection between IQ and weight? Use the correlation coefficient to test it. Round corresponding p-value to **three** decimal points.
 
-c) Assume that the data come from a bivariate normal distribution.
-Is there a connection between IQ and weight? Use the correlation coefficient to test it. Round corresponding p-value to **three** decimal points.
+| p-value of the test | conclusion                                                                                                                     |
+|---------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `0.781`             | `I fail to reject the null hypothesis. There does not seem to be statistically significant correlation between IQ and weight.` |
 
-| p-value of the test | conclusion |
-|-------------------| -----------------|
-| `insert` | `insert` |
-
-
-d) Use Monte Carlo simulations (perform 9 999 replications) to get a simulated p-value of the previous test. Round it to **three** decimal points.
+d)  Use Monte Carlo simulations (perform 9 999 replications) to get a simulated p-value of the previous test. Round it to **three** decimal points.
 
 | Simulated p-value |
 |-------------------|
-| `insert` |
+| `0.782`           |
 
 \textcolor{blue}{\textbf{Hint:}} Assume normality of the data. Correlation coefficient does not depend on the value of means, nor variances of both variables. Hence they \textcolor{red}{\textbf{are not}} nuisance parameters and do not need to be taken into account.
 
 \textcolor{red}{\textbf{Caution:}} Before every simulation run, do not forget to change `set.seed` of PRNG with your `UCO`:
 
 ```{r}
-uco <- 235559  # insert your UCO
+uco <- 492875  # insert your UCO
 set.seed(uco)
 ```
 
 \newpage
+
 ## Task 2 - Testing hypotheses (5 points)
 
 Work with the data samples from `farm1.RData` and `farm2.RData` containing the weights of the total production (in `kg`) in different months at two farms. Your task is to compare their productions.
@@ -63,25 +60,29 @@ load("farm2.RData")
 
 Firstly answer the question, if the average weight of the production at the farm 1 equals 125 `kg` (as the owner of the farm proclaims), or less. Which statistical tool is appropriate (**explain** Your choice in details)? Why? What is the result (compute p-value and write the conclusion)?
 
-| Name of the test | Explanation | p-value | conclusion |
-| ----------------- | --------------------- | ------------ | ------------------ |
-| `insert` | `insert` | `insert` | REJECTED / NOT REJECTED |
++----------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------+-----------------------------------------------------------------------------------------------------------------+
+| Name of the test     | Explanation                                                                                                                                                   | p-value       | conclusion                                                                                                      |
++======================+===============================================================================================================================================================+===============+=================================================================================================================+
+| `one-sample t-test`  | `We want to know if the samples come from a population with a specific mean (125kg).H0 - average weight equals 125 kgHA - average weight is less than 125 kg` | `0.18`        | Fail to reject null hypothesis. There is not enough evidence to say that the average weight is less than 125kg. |
++----------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------+-----------------------------------------------------------------------------------------------------------------+
 
 Now try to answer, if the average weights of production at the farms are the same. Which statistical test is appropriate (**explain** Your choice in details)? Why? What is the result (compute p-value and write the conclusion)? Support your conclusion by **one** suitable figure, which will visualize the results of your test (the averages of the weights, their difference etc.).
 
-| Name of the test | Explanation | p-value | conclusion |
-| ----------------- | ---------------------- | ------------- | ------------------ |
-| `insert` | `insert` | `insert` | REJECTED / NOT REJECTED |
++---------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Name of the test    | Explanation                                                                                                                                                       | p-value       | conclusion                                                                                                                                             |
++=====================+===================================================================================================================================================================+===============+========================================================================================================================================================+
+| `tow-sample t-test` | `We have 2 independand dataset and want to test if their average product weight is the same.H0 - Average weight is sameHA - Average weight differ signifficantly` | `0.669`       | Fail to reject null hypothesis. There is not enough evidence to suggest that the average weight of production between both farms differ significantly. |
++---------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 In each task \textcolor{red}{\textbf{check the assumptions}} of the tests you used and \textcolor{red}{\textbf{name them all}} in the `Explanation` sections.
 
 ## Task 3 - Linear model (6 points)
 
-Work with the `cholesterol.RData` dataset. It contains information about the cholesterol levels, age, blood pressure, dietary preferences and smoking habits of 100 patients. Your task is to model the cholesterol levels. Try to create a model that best describes the cholesterol levels while being as simple as possible. 
+Work with the `cholesterol.RData` dataset. It contains information about the cholesterol levels, age, blood pressure, dietary preferences and smoking habits of 100 patients. Your task is to model the cholesterol levels. Try to create a model that best describes the cholesterol levels while being as simple as possible.
 
-| Your chosen model formula | adjusted R squared |
-| ----------------- | ---------------------- |
-| `insert e.g. cholesterol ~ age + smoker` | `insert` | 
+| Your chosen model formula                | adjusted R squared |
+|------------------------------------------|--------------------|
+| `insert e.g. cholesterol ~ age + smoker` | `insert`           |
 
 \textcolor{blue}{\textbf{Hint:}} Consider different transformations of the explanatory variables at hand.
 
@@ -89,20 +90,20 @@ Work with the `cholesterol.RData` dataset. It contains information about the cho
 
 Interpret adjusted R squared. What does it mean?
 
-| Value of adjusted R squared| Interpretation |
-| ----------------- | ---------------------- |
-| `insert value` | `insert text` | 
+| Value of adjusted R squared | Interpretation |
+|-----------------------------|----------------|
+| `insert value`              | `insert text`  |
 
 Interpret the coefficients of your chosen model. If your model uses a different number of coefficients as listed here, add or delete table rows.
 
-| Variable | Value of coefficient | Interpretation |
-| ----------------- | ---------------------- |---------------------- |
-| `insert variable name` | `insert value` | `insert text` | 
-| `insert variable name` | `insert value` | `insert text` | 
-| `insert variable name` | `insert value` | `insert text` | 
+| Variable               | Value of coefficient | Interpretation |
+|------------------------|----------------------|----------------|
+| `insert variable name` | `insert value`       | `insert text`  |
+| `insert variable name` | `insert value`       | `insert text`  |
+| `insert variable name` | `insert value`       | `insert text`  |
 
 Interpret the validity of your model (the F statistic in the models summary).
 
-| Null hypothesis | p-value | Interpretation |
-| ----------------- | ---------------------- | ---------------------- |
-| `insert` | `insert` | `insert` | 
+| Null hypothesis | p-value  | Interpretation |
+|-----------------|----------|----------------|
+| `insert`        | `insert` | `insert`       |
