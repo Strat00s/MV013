@@ -1,4 +1,3 @@
-
 #### Task 1 ####
 uco <- 492875  # insert your UCO
 set.seed(uco)
@@ -105,5 +104,68 @@ boxplot(farm1, farm2, names = c("Farm 1", "Farm 2"),
         ylab = "Weight", 
         main = "Comparison of production")
 
+
+#### Task 3 ####
+load("cholesterol.RData")
+str(data)
+
+shapiro.test(data$age)
+shapiro.test(data$blood_pressure_systolic)
+shapiro.test(data$blood_pressure_diastolic)
+tmp <- ifelse(data$smoker == "smoker", 1, 0)
+shapiro.test(tmp)
+tmp <- ifelse(data$vegetarian == "vegetarian", 1, 0)
+shapiro.test(tmp)
+shapiro.test(data$cholesterol)
+
+model = lm(cholesterol ~ age + blood_pressure_systolic + blood_pressure_diastolic + smoker + vegetarian, data = data)
+#normality looks ok, residuals vs fitted not so ok
+par(mfrow = c(2, 2))
+plot(model)
+par(mfrow = c(1, 1))
+
+
+#try log target and
+data$cholesterol_log = log(data$cholesterol)
+data$blood_pressure_systolic_log = log(data$blood_pressure_systolic)
+data$blood_pressure_diastolic_log = log(data$blood_pressure_diastolic)
+
+log_model1 = lm(cholesterol_log ~ age + blood_pressure_systolic + blood_pressure_diastolic + smoker + vegetarian, data = data)
+log_model2 = lm(cholesterol ~ age + smoker + vegetarian + blood_pressure_systolic_log + blood_pressure_diastolic, data = data)
+log_model3 = lm(cholesterol_log ~ age + smoker + vegetarian + blood_pressure_systolic_log + blood_pressure_diastolic, data = data)
+log_model4 = lm(cholesterol ~ age + smoker + vegetarian + blood_pressure_systolic + blood_pressure_diastolic_log, data = data)
+log_model5 = lm(cholesterol_log ~ age + smoker + vegetarian + blood_pressure_systolic + blood_pressure_diastolic_log, data = data)
+log_model6 = lm(cholesterol_log ~ age + smoker + vegetarian + blood_pressure_systolic_log + blood_pressure_diastolic_log, data = data)
+
+
+# Check the residuals vs fitted values plot again
+par(mfrow = c(2, 3))
+plot(log_model1, which = 1)
+plot(log_model2, which = 1)
+plot(log_model3, which = 1)
+plot(log_model4, which = 1)
+plot(log_model5, which = 1)
+plot(log_model6, which = 1)
+par(mfrow = c(1, 1))
+#model5 looks "best"
+
+par(mfrow = c(2, 2))
+plot(log_model5)
+par(mfrow = c(1, 1))
+
+#get
+bws_model = step(log_model6)
+bws_model$anova
+
+par(mfrow = c(2, 2))
+plot(bws_model)
+par(mfrow = c(1, 1))
+
+residuals = residuals(log_model1)
+shapiro.test(residuals)
+qqnorm(residuals)
+qqline(residuals)
+
+summary(bws_model)
 
 
