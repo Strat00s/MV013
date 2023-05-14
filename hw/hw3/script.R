@@ -4,6 +4,12 @@ set.seed(uco)
 
 data = read.csv("women.csv")
 
+summary(data)
+hist(data$weight)
+#remove probably invalid data
+data = data[data$weight > 10,]
+
+
 #--------- 1a ----------
 iq = data$IQ
 weight = data$weight
@@ -50,21 +56,15 @@ rep = 9999
 mc_corr = numeric(rep)
 set.seed(uco)
 
-#monte carlo loop
-#for (i in 1:rep) {
-    #n = nrow(data)
-    #mu = c(mean(data$IQ), mean(data$weight))
-    #sigma = matrix(c(var(data$IQ), 0, 0, var(data$weight)), nrow = 2)
-    #    mc_sample = mvrnorm(n, mu, sigma)
-    #    mc_corr[i] <- cor(mc_sample[,1], mc_sample[,2])
-#}
-
 for (i in 1:rep) {
     shuffled_weights = sample(data$weight)
     mc_corr[i] = cor(data$IQ, shuffled_weights)
 }
 
-sim_p_val <- mean(abs(mc_corr) >= abs(corr))
+#sim_p_val = mean(abs(mc_corr) >= abs(corr))
+#from 12th seminar
+sim_p_val = 2 * min((sum(mc_corr <= corr) + 1) / (rep + 1),
+                    (sum(mc_corr >= corr) + 1) / (rep + 1))
 
 cat("p-value: ", round(p_val, 3))
 cat("Simulated: ", round(sim_p_val, 3))
@@ -73,6 +73,9 @@ cat("Simulated: ", round(sim_p_val, 3))
 #### Task 2 ####
 load("farm1.RData")
 load("farm2.RData")
+
+summary(farm1)
+summary(farm2)
 
 hist(farm1, freq = F)
 lines(density(farm1))
