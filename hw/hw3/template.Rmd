@@ -27,7 +27,7 @@ b)  Use nonparametric bootstrap (perform 10 000 replications) to estimate 95% co
 c)  Assume that the data come from a bivariate normal distribution. Is there a connection between IQ and weight? Use the correlation coefficient to test it. Round corresponding p-value to **three** decimal points.
 
 | p-value of the test | conclusion                                                                                                                     |
-|---------------|---------------------------------------------------------|
+|-----------------|-------------------------------------------------------|
 | `0.509`             | `I fail to reject the null hypothesis. There does not seem to be statistically significant correlation between IQ and weight.` |
 
 d)  Use Monte Carlo simulations (perform 9 999 replications) to get a simulated p-value of the previous test. Round it to **three** decimal points.
@@ -59,13 +59,13 @@ load("farm2.RData")
 Firstly answer the question, if the average weight of the production at the farm 1 equals 125 `kg` (as the owner of the farm proclaims), or less. Which statistical tool is appropriate (**explain** Your choice in details)? Why? What is the result (compute p-value and write the conclusion)?
 
 | Name of the test    | Explanation                                                                                                                                                   | p-value | conclusion                                                                                                        |
-|------------|------------------------------|------------|--------------------|
+|---------------|--------------------------|---------------|-----------------|
 | `one-sample t-test` | `We want to know if the samples come from a population with a specific mean (125kg).H0 - average weight equals 125 kgHA - average weight is less than 125 kg` | `0.18`  | I fail to reject null hypothesis. There is not enough evidence to say that the average weight is less than 125kg. |
 
 Now try to answer, if the average weights of production at the farms are the same. Which statistical test is appropriate (**explain** Your choice in details)? Why? What is the result (compute p-value and write the conclusion)? Support your conclusion by **one** suitable figure, which will visualize the results of your test (the averages of the weights, their difference etc.).
 
 | Name of the test    | Explanation                                                                                                                                                       | p-value | conclusion                                                                                                                                               |
-|-----------|--------------------------|-----------|------------------------|
+|---------------|----------------------|---------------|---------------------|
 | `tow-sample t-test` | `We have 2 independand dataset and want to test if their average product weight is the same.H0 - Average weight is sameHA - Average weight differ signifficantly` | `0.669` | I fail to reject null hypothesis. There is not enough evidence to suggest that the average weight of production between both farms differ significantly. |
 
 In each task \textcolor{red}{\textbf{check the assumptions}} of the tests you used and \textcolor{red}{\textbf{name them all}} in the `Explanation` sections.
@@ -74,9 +74,9 @@ In each task \textcolor{red}{\textbf{check the assumptions}} of the tests you us
 
 Work with the `cholesterol.RData` dataset. It contains information about the cholesterol levels, age, blood pressure, dietary preferences and smoking habits of 100 patients. Your task is to model the cholesterol levels. Try to create a model that best describes the cholesterol levels while being as simple as possible.
 
-| Your chosen model formula                                       | adjusted R squared |
-|------------------------------------------------------|------------------|
-| `cholesterol_log ~ age + vegetarian + blood_pressure_diastolic` | `0.971`            |
+| Your chosen model formula             | adjusted R squared |
+|---------------------------------------|--------------------|
+| `log(cholesterol) ~ age * vegetarian` | `0.969`            |
 
 \textcolor{blue}{\textbf{Hint:}} Consider different transformations of the explanatory variables at hand.
 
@@ -85,19 +85,19 @@ Work with the `cholesterol.RData` dataset. It contains information about the cho
 Interpret adjusted R squared. What does it mean?
 
 | Value of adjusted R squared | Interpretation                                                                                       |
-|------------------|------------------------------------------------------|
-| `0.971`                     | `It means that about 97.1% of the variation in cholesterol variable can be explained by this model.` |
+|-------------------|-----------------------------------------------------|
+| `0.969`                     | `It means that about 96.9% of the variation in cholesterol variable can be explained by this model.` |
 
 Interpret the coefficients of your chosen model. If your model uses a different number of coefficients as listed here, add or delete table rows.
 
 | Variable                   | Value of coefficient | Interpretation                                                                                                                                                                                  |
-|------------|------------|-------------------------------------------------|
-| `age`                      | `0.024`              | `Change in log(cholesterol) for each one-year increase in age. Can be interpreted also as 2.4% increase cholesterol for each aditional year of age.`                                            |
-| `vegetarian`               | `0.101`              | `Difference between expected log(cholesterol) in vegetarians and meat-eaters. We would expect the log(cholesterol) to be on average about 0.101 lower for vegetarians compared to meat-eaters.` |
-| `blood_pressure_diastolic` | `0.003`              | `Similiar to age. We would expect for a one-unit increase in diastolic blood pressure the log(cholesterol) to increase on average by 0.003.`                                                    |
+|---------------|---------------|-------------------------------------------|
+| `age`                      | `0.027`              | `Change in log(cholesterol) for each one-year increase in age. Can be interpreted also as 2.7% increase in log(cholesterol) for each aditional year of age.`                                    |
+| `vegetarian`               | `0.381`              | `Difference between expected log(cholesterol) in vegetarians and meat-eaters. We would expect the log(cholesterol) to be on average about 0.381 lower for vegetarians compared to meat-eaters.` |
+| `age:vegetarianmeat-eater` | `-0.005`             | `Interaction term. It represents the difference in rate of change in log(cholesterol) for a one-year increase in age between meat-eaters and vegetarians.`                                      |
 
 Interpret the validity of your model (the F statistic in the models summary).
 
 | Null hypothesis                                                                                                                                                                                                   | p-value   | Interpretation                                                                                                                                                                                    |
-|-------------------------------|-------------|----------------------------|
+|-----------------------------|-----------------|--------------------------|
 | All of the regression coefficients are zero, which would imply that none of the predictors (age, wheter they are vegetarian, diastolic blood pressure) have any effect on the response variable log(cholesterol). | `2.2e-16` | `I fail reject the null hypothesis and can conclude that there is a strong evidence that at least one of the predictors is significantly associated with the response variable log(cholesterol).` |

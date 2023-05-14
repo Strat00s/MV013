@@ -114,52 +114,25 @@ boxplot(farm1, farm2, names = c("Farm 1", "Farm 2"),
 load("cholesterol.RData")
 data$id = NULL
 str(data)
-model = lm(cholesterol ~ age + blood_pressure_systolic + blood_pressure_diastolic + smoker + vegetarian, data = data)
+model = lm(cholesterol ~ age + vegetarian + smoker + blood_pressure_systolic + blood_pressure_diastolic, data = data)
 #normality looks ok, linearity not so much
 par(mfrow = c(2, 2))
 plot(model)
 par(mfrow = c(1, 1))
 
+#this one looks pretty good
+model = lm(cholesterol ~ age * vegetarian + smoker + blood_pressure_systolic + blood_pressure_diastolic, data = data)
+par(mfrow = c(2, 2))
+plot(model)
+par(mfrow = c(1, 1))
 
+
+#looks even better
 data$cholesterol_log = log(data$cholesterol)
-#data$blood_pressure_systolic_log = sqrt(data$blood_pressure_systolic)
-#data$blood_pressure_diastolic_log = sqrt(data$blood_pressure_diastolic)
-
-log_model = lm(cholesterol_log ~ age + blood_pressure_systolic + blood_pressure_diastolic + smoker + vegetarian, data = data)
-#log_model2 = lm(cholesterol ~ age + smoker + vegetarian + blood_pressure_systolic_log + blood_pressure_diastolic, data = data)
-#log_model3 = lm(cholesterol_log ~ age + smoker + vegetarian + blood_pressure_systolic_log + blood_pressure_diastolic, data = data)
-#log_model4 = lm(cholesterol ~ age + smoker + vegetarian + blood_pressure_systolic + blood_pressure_diastolic_log, data = data)
-#log_model5 = lm(cholesterol_log ~ age + smoker + vegetarian + blood_pressure_systolic + blood_pressure_diastolic_log, data = data)
-#log_model6 = lm(cholesterol_log ~ age + smoker + vegetarian + blood_pressure_systolic_log + blood_pressure_diastolic_log, data = data)
-
-
-# Check the residuals vs fitted values plot again
-#par(mfrow = c(2, 3))
-#plot(log_model1, which = 1)
-#plot(log_model2, which = 1)
-#plot(log_model3, which = 1)
-#plot(log_model4, which = 1)
-#plot(log_model5, which = 1)
-#plot(log_model6, which = 1)
-#par(mfrow = c(1, 1))
-
-
-#model1 and model5 look better than others
-#par(mfrow = c(2, 2))
-#plot(log_model1)
-#par(mfrow = c(1, 1))
-#par(mfrow = c(2, 2))
-#plot(log_model5)
-#par(mfrow = c(1, 1))
-
-#looks better
+log_model = lm(cholesterol_log ~ age * vegetarian + blood_pressure_systolic + blood_pressure_diastolic + smoker, data = data)
 par(mfrow = c(2, 2))
 plot(log_model)
 par(mfrow = c(1, 1))
-
-#model1 looks best
-data$blood_pressure_systolic_log = NULL
-data$blood_pressure_diastolic_log = NULL
 
 
 ## We apparently cannot use step-wise procedures, so correlation matrix instead
@@ -172,11 +145,10 @@ library(corrplot)
 cor_matrix = cor(data[, sapply(data, is.numeric)])
 corrplot(cor_matrix)
 
+#simplest and best seem to be age and if they are vegetarian or not
 (cholesterol_log_cor = cor_matrix["cholesterol_log",])
-#best possible predictors seems to be age, if the person was vegetarian
-    #and diastolic blood pressure
-
-final_model = lm(cholesterol_log ~ age + vegetarian + blood_pressure_diastolic, data = data)
+print(data$vegetarian)
+final_model = lm(cholesterol_log ~ age * vegetarian, data = data)
 par(mfrow = c(2, 2))
 plot(final_model)
 par(mfrow = c(1, 1))
