@@ -36,6 +36,7 @@ for (i in 1:rep) {
     bootstrap_corr[i] = cor(bootstrap_sample$IQ, bootstrap_sample$weight)
 }
 
+
 bootstrap_ci = quantile(bootstrap_corr, c(0.025, 0.975))
 
 #print the results
@@ -61,8 +62,8 @@ for (i in 1:rep) {
     mc_corr[i] = cor(data$IQ, shuffled_weights)
 }
 
+#both should be valid, but I'll use the one from 12th seminar
 #sim_p_val = mean(abs(mc_corr) >= abs(corr))
-#from 12th seminar
 sim_p_val = 2 * min((sum(mc_corr <= corr) + 1) / (rep + 1),
                     (sum(mc_corr >= corr) + 1) / (rep + 1))
 
@@ -83,11 +84,6 @@ hist(farm2, freq = F)
 lines(density(farm2))
 length(farm1)
 length(farm2)
-
-#Test normality and variance -> both are ok for t-tests
-shapiro.test(farm1)
-shapiro.test(farm2)
-var.test(farm1, farm2)
 
 
 ## Farm 1 average 125kg?
