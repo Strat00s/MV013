@@ -1,13 +1,11 @@
 #### Task 1 ####
-uco <- 492875  # insert your UCO
+uco = 492875  # insert your UCO
 set.seed(uco)
 
 data = read.csv("women.csv")
 
 summary(data)
-hist(data$weight)
-#remove probably invalid data
-data = data[data$weight > 10,]
+hist(data$weight) #we are not supposed to remove any probably invalid data
 
 
 #--------- 1a ----------
@@ -58,8 +56,9 @@ mc_corr = numeric(rep)
 set.seed(uco)
 
 for (i in 1:rep) {
-    shuffled_weights = sample(data$weight)
-    mc_corr[i] = cor(data$IQ, shuffled_weights)
+    norm_iq = rnorm(length(iq), mean(iq), sd(iq))
+    norm_weight = rnorm(length(weight), mean(weight), sd(weight))
+    mc_corr[i] = cor(norm_iq, norm_weight)
 }
 
 #both should be valid, but I'll use the one from 12th seminar
@@ -133,8 +132,8 @@ par(mfrow = c(1, 1))
 
 ## We apparently cannot use step-wise procedures, so correlation matrix instead
 #make variables numeric
-data$smoker_numeric <- ifelse(data$smoker == "smoker", 1, 0)
-data$vegetarian_numeric <- ifelse(data$vegetarian == "vegetarian", 1, 0)
+data$smoker_numeric = ifelse(data$smoker == "smoker", 1, 0)
+data$vegetarian_numeric = ifelse(data$vegetarian == "vegetarian", 1, 0)
 
 #use correlatiion matrix to check for possible predictors
 library(corrplot)
