@@ -66,8 +66,7 @@ for (i in 1:rep) {
 sim_p_val = 2 * min((sum(mc_corr <= corr) + 1) / (rep + 1),
                     (sum(mc_corr >= corr) + 1) / (rep + 1))
 
-cat("p-value: ", round(p_val, 3))
-cat("Simulated: ", round(sim_p_val, 3))
+cat("Simulated p-value: ", round(sim_p_val, 3))
 
 
 #### Task 2 ####
@@ -84,9 +83,14 @@ lines(density(farm2))
 length(farm1)
 length(farm2)
 
+#looks good for t-test
+shapiro.test(farm1)
+shapiro.test(farm2)
+var.test(farm1, farm2)
+
 
 ## Farm 1 average 125kg?
-result = t.test(farm1, mu = 125, alternative = "less")
+result = ?t.test(farm1, mu = 125, alternative = "less")
 cat("p-value: ", round(result$p.value, 3))
 ifelse(result$p.value < 0.05, "reject H0", "fail to reject H0")
 
