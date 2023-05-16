@@ -90,7 +90,7 @@ var.test(farm1, farm2)
 
 
 ## Farm 1 average 125kg?
-result = ?t.test(farm1, mu = 125, alternative = "less")
+result = t.test(farm1, mu = 125, alternative = "less")
 cat("p-value: ", round(result$p.value, 3))
 ifelse(result$p.value < 0.05, "reject H0", "fail to reject H0")
 
@@ -113,41 +113,47 @@ boxplot(farm1, farm2, names = c("Farm 1", "Farm 2"),
 load("cholesterol.RData")
 data$id = NULL
 str(data)
+
+
+#default model; normality looks ok, linearity not so much
 model = lm(cholesterol ~ age + vegetarian + smoker + blood_pressure_systolic + blood_pressure_diastolic, data = data)
-#normality looks ok, linearity not so much
 par(mfrow = c(2, 2))
 plot(model)
 par(mfrow = c(1, 1))
 
-#this one looks pretty good
-model = lm(cholesterol ~ age * vegetarian + smoker + blood_pressure_systolic + blood_pressure_diastolic, data = data)
-par(mfrow = c(2, 2))
-plot(model)
-par(mfrow = c(1, 1))
-
-
-#looks even better
+#linearity looks good
 data$cholesterol_log = log(data$cholesterol)
-log_model = lm(cholesterol_log ~ age * vegetarian + blood_pressure_systolic + blood_pressure_diastolic + smoker, data = data)
+model1 = lm(cholesterol_log ~ age + vegetarian + smoker + blood_pressure_systolic + blood_pressure_diastolic, data = data)
 par(mfrow = c(2, 2))
-plot(log_model)
+plot(model1)
 par(mfrow = c(1, 1))
+summary(model)
+
+##This one looks even better, but is more complex.
+data$cholesterol_log = log(data$cholesterol)
+model2 = lm(cholesterol_log ~ age * vegetarian + blood_pressure_systolic + blood_pressure_diastolic + smoker, data = data)
+par(mfrow = c(2, 2))
+plot(model2)
+par(mfrow = c(1, 1))
+summary(model)
+
 
 
 ## We apparently cannot use step-wise procedures, so correlation matrix instead
 #make variables numeric
 data$smoker_numeric = ifelse(data$smoker == "smoker", 1, 0)
 data$vegetarian_numeric = ifelse(data$vegetarian == "vegetarian", 1, 0)
-
-#use correlatiion matrix to check for possible predictors
 library(corrplot)
 cor_matrix = cor(data[, sapply(data, is.numeric)])
 corrplot(cor_matrix)
 
-#simplest and best seem to be age and if they are vegetarian or not
-(cholesterol_log_cor = cor_matrix["cholesterol_log",])
-print(data$vegetarian)
-final_model = lm(cholesterol_log ~ age * vegetarian, data = data)
+
+#As we want the model to "best describe the cholesterol levels while being
+    #as simple as possible" I lean towards the first model, as it is less
+    #complex with very small difference in adjusted R squared and F-statistics
+#Is the complexity worth it? Would it be overfitting?
+
+final_model = lm(cholesterol_log ~ age + vegetarian, data = data)
 par(mfrow = c(2, 2))
 plot(final_model)
 par(mfrow = c(1, 1))
